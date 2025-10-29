@@ -1,18 +1,295 @@
-#include <Arduino.h>
+#include <MeMCore.h>
+#include <math.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#define TURNING_TIME_MS 390  // The time duration (ms) for turning
+
+//Defines pins to be used for controlling LED pins
+#define S1 A2  //1A on HD74LS139
+#define S2 A3  //1B on HD74LS139
+//Defines pin to recieve LDR reading
+#define LDR A1
+//Defines time delay before taking another RGB/LDR reading
+#define RGBWait 150
+#define LDRWait 10
+
+MePort port4(PORT_4);
+MePort port3(PORT_3);
+
+int selA = port3.pin1(); //Selector Pin 1A on HD74LS139
+int selB = port3.pin2(); //Selector Pin 1B on HD74LS139
+
+MeDCMotor leftMotor(M1);   // assigning leftMotor to port M1
+MeDCMotor rightMotor(M2);  // assigning RightMotor to port M2
+int IRPin = 0;
+uint8_t motorSpeed = 255;
+
+// Setting motor speed to an integer between 1 and 255
+// The larger the number, the faster the speed
+
+MeBuzzer buzzer;  // create the buzzer object
+
+
+void celebrate() {  //Code for playing celebratory tune
+  // Each of the following "function calls" plays a single tone.
+  // The numbers in the bracket specify the frequency and the duration (ms)
+  buzzer.tone(392, 200);
+  buzzer.tone(523, 200);
+  buzzer.tone(659, 200);
+  buzzer.tone(784, 200);
+  buzzer.tone(659, 150);
+  buzzer.tone(784, 400);
+  buzzer.noTone();
+}
+void stopMotor() {    // Code for stopping motor
+  leftMotor.stop();   // Stop left motor
+  rightMotor.stop();  // Stop right motor
+}
+void moveForward() {           // Code for moving forward for some short interval
+  leftMotor.run(-motorSpeed);  // Negative: wheel turns anti-clockwise
+  rightMotor.run(motorSpeed);  // Positive: wheel turns clockwise
+}
+void turnRight() {              // Code for turning right 90 deg
+  leftMotor.run(-motorSpeed);   // Positive: wheel turns clockwise
+  rightMotor.run(-motorSpeed);  // Positive: wheel turns clockwise
+  delay(TURNING_TIME_MS);
+  leftMotor.stop();   // Stop left motor
+  rightMotor.stop();  // Stop right motor
+  delay(1000);        // Stop for 1000 ms
+}
+void turnLeft() {  // Code for turning left 90 deg
+  // Turning left (on the spot):
+  leftMotor.run(motorSpeed);   // Positive: wheel turns clockwise
+  rightMotor.run(motorSpeed);  // Positive: wheel turns clockwise
+  delay(TURNING_TIME_MS);      // Keep turning left for this time duration
+  leftMotor.stop();            // Stop left motor
+  rightMotor.stop();           // Stop right motor
+  delay(1000);                 // Stop for 1000 ms
+}
+void uTurn() {  // Code for u-turn
+  turnLeft();
+  moveForward();
+  delay(500);
+  turnLeft();
+}
+void doubleLeftTurn() {  // Code for double left turn
+  turnLeft();
+  moveForward();
+  delay(800);
+  turnLeft();
+}
+void doubleRightTurn() {  // Code for double right turn
+  turnRight();
+  moveForward();
+  delay(800);
+  turnRight();
+}
+void nudgeLeft() {             // Code for nudging slightly to the left for some short interval
+  leftMotor.run(motorSpeed);   // Positive: wheel turns clockwise
+  rightMotor.run(motorSpeed);  // Positive: wheel turns clockwise
+  delay(100);                  // Keep turning left for this time duration
+  leftMotor.stop();            // Stop left motor
+  rightMotor.stop();           // Stop right motor
+  delay(1000);                 // Stop for 1000 ms
+}
+void nudgeRight() {             // Code for nudging slightly to the right for some short interval
+  leftMotor.run(-motorSpeed);   // Positive: wheel turns clockwise
+  rightMotor.run(-motorSpeed);  // Positive: wheel turns clockwise
+  delay(TURNING_TIME_MS);
+  leftMotor.stop();   // Stop left motor
+  rightMotor.stop();  // Stop right motor
+  delay(1000);        // Stop for 1000 ms
+}
+void shineIR() {  // Code for turning on the IR emitter only
+}
+void shineRed() {  // Code for turning on the red LED only
+}
+void shineGreen() {  // Code for turning on the green LED only
+}
+void shineBlue() {  // Code for turning on the blue LED only
+}
+int detectColour() {
+  // Shine Red, read LDR after some delay
+  // Shine Green, read LDR after some delay
+  // Shine Blue, read LDR after some delay
+  // Run algorithm for colour decoding
+}
+
+
+//Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
+int RGBPins[3][2] = { { HIGH, LOW }, { LOW, HIGH }, { HIGH, HIGH } };
+//Array to store RGB values in the order black, white and range
+int calibrate[3][3] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+String calibrateNames[3] = { "black", "white", "range" };
+//Array to store RGB values in the order red, green, orange, pink, light blue and white
+int colours[6][3] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+String coloursNames[6] = { "red", "green", "orange", "pink", "light blue", "white" };
+
+void calibrateSensor() {
+  //Code to calibrate sensor and store RGB values of black, white and range
+  for (int i = 0; i < 2; i++) {
+    Serial.println("Put " + calibrateNames[i] + " sample for calibration...");
+    delay(5000);
+    for (int j = 0; j < 3; j++) {
+      digitalWrite(S1, RGBPins[j][0]);
+      digitalWrite(S2, RGBPins[j][1]);
+      delay(RGBWait);
+      calibrate[i][j] = getAvgReading();
+      digitalWrite(S1, LOW);
+      digitalWrite(S2, LOW);
+      delay(RGBWait);
+    }
+  }
+  for (int k = 0; k < 3; k++) {
+    calibrate[2][k] = calibrate[1][k] - calibrate[0][k];
+  }
+  //Code to print out stored RGB values of black, white and range
+  Serial.println("Black, white and range values successfully stored!");
+  for (int a = 0; a < 3; a++) {
+    Serial.println(calibrateNames[a]);
+    for (int b = 0; b < 3; b++) {
+      Serial.println(calibrate[a][b]);
+    }
+  }
+  delay(5000);
+}
+
+
+void calibrateColour() {
+  //Code to store RGB values of red, green, orange, pink, light blue, white
+  for (int i = 0; i < 6; i++) {
+    Serial.println("Put " + coloursNames[i] + " sample for calibration...");
+    delay(5000);
+    for (int j = 0; j < 3; j++) {
+      digitalWrite(S1, RGBPins[j][0]);
+      digitalWrite(S2, RGBPins[j][1]);
+      delay(RGBWait);
+      colours[i][j] = getAvgReading();
+      colours[i][j] = (colours[i][j] - calibrate[0][j]) / calibrate[2][j] * 255;
+      digitalWrite(S1, LOW);
+      digitalWrite(S2, LOW);
+      delay(RGBWait);
+    }
+  }
+  //Code to print out stored RGB values of the colours
+  Serial.println("All colour values successfully stored!");
+  for (int a = 0; a < 6; a++) {
+    Serial.println(coloursNames[a]);
+    for (int b = 0; b < 3; b++) {
+      Serial.println(colours[a][b]);
+    }
+  }
+  delay(5000);
+}
+
+int getColour() {
+  //Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
+  int current[3] = { 0, 0, 0 };
+  for (int i = 0; i < 3; i++) {
+    digitalWrite(S1, RGBPins[i][0]);
+    digitalWrite(S2, RGBPins[i][1]);
+    delay(RGBWait);
+    current[i] = getAvgReading();
+    current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255;
+    digitalWrite(S1, LOW);
+    digitalWrite(S2, LOW);
+    delay(RGBWait);
+  }
+  //Code to run colour matching algorithm
+  int min = 300;
+  int minidx = 0;
+  for (int j = 0; j < 6; j++) {
+    int temp = 0;
+    for (int k = 0; k < 3; k++) {
+      temp += abs(current[k] - colours[j][k]);
+    }
+    if (temp < min) {
+      minidx = j;
+      min = temp;
+    }
+  }
+  return minidx;
+}
+
+int getAvgReading() {
+  //Code to return average reading of LDR
+  int total = 0;
+  for (int i = 0; i < 7; i++) {
+    total += analogRead(LDR);
+    delay(LDRWait);
+  }
+  return total / 7;
+}
+
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(9600);
+
+  //put your setup code here, to run once:
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  calibrateSensor();
+  calibrateColour();
+
+  // IR Sensor Code
+  pinMode(selA, OUTPUT);
+  pinMode(selB, OUTPUT);
+
+  digitalWrite(selA, LOW);
+  digitalWrite(selB, LOW);
+
+  // IR Sensor Testing
+  Serial.println("=== IR Sensor Test Started ===");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+
+  // LDR CODE
+
+  delay(5000);
+  Serial.println(coloursNames[getColour()]);
+
+  // IR SENSOR CODE
+
+  // Turn IR emitter ON
+  digitalWrite(selA, LOW);
+  digitalWrite(selB, LOW);
+
+  delay(5);  // small delay to stabilize
+
+  // Read reflected light
+  int readingOn = port4.aRead1();
+
+  // Turn IR emitter OFF and read ambient light (for baseline)
+  digitalWrite(selA, LOW);
+  digitalWrite(selB, HIGH);
+  delay(5);
+  int readingOff = port4.aRead1();
+
+  // Compute reflected IR difference
+  int irValue = readingOff - readingOn;
+
+  Serial.print("Ambient: ");
+  Serial.print(readingOff);
+  Serial.print("  Reflected: ");
+  Serial.print(readingOn);
+  Serial.print("  Δ = ");
+  Serial.println(irValue);
+  
+  delay(200);
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
+//void setup() {
+// Configure pinMode for A0, A1, A2, A3
+//}
+//void loop() {
+// Read ultrasonic sensing distance (choose an appropriate timeout)
+// Read IR sensing distance (turn off IR, read IR detector, turn on IR, read IR detector, estimate distance)
+// if within black line, stop motor, detect colour, and take corresponding action
+// else if too near to left wall, nudge right
+// else if too near to right wall, nudge left
+// else move forward
+// Going forward:
+///delay(10000);
+//nudgeLeft();
+
+//}
