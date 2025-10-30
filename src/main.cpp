@@ -3,10 +3,21 @@
 
 MePort port4(PORT_4);
 MePort port3(PORT_3);
-MeUltrasonicSensor ultrasonic(PORT_1);  // Mount on side wall (left or right)
+
 MeDCMotor motorL(M1);
 MeDCMotor motorR(M2);
 #define TURNING_TIME_MS 390 // The time duration (ms) for turning
+//Integrated Ultrasonic Sensor and Line Following code 
+MeUltrasonicSensor ultrasonic(PORT_1);   // Side-mounted ultrasonic sensor (right side)
+MeLineFollower lineSensor(PORT_2);       // Line follower underneath
+
+// --- Wall-following Parameters ---
+float targetDist = 8.0;     // Desired distance (cm) from side wall
+float tolerance  = 1.0;     // Acceptable deviation
+int baseSpeed    = 150;     // Forward speed
+int correction   = 40;      // Adjustment for small turns
+int timeout_ms   = 30;      // Ultrasonic read timeout
+
 
 // Defines pin to recieve LDR reading
 #define LDR A1
@@ -274,44 +285,51 @@ void loop() {
 
     delay(200);
 }
-float targetDist = 8.0;    // Target side distance from wall (cm)
-float tolerance  = 1.0;    // Allowable error range (cm)
-int baseSpeed    = 150;    // Normal forward speed
-int correction   = 40;     // Turning adjustment
-int timeout_ms   = 30;     // Timeout for faster responsiveness
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("=== Ultrasonic Sensor Wall-Following Test ===");
+  Serial.println("=== A-maze-ing Race: Ultrasonic + Line Sensor ===");
 }
 
 void loop() {
-  // Measure distance with timeout (recommended from the brief)
-  float distance = ultrasonic.distanceCm(timeout_ms);
+  // --- Step 1: Check for black strip using line sensor ---
+  int lineState = lineSensor.readSensors();
 
-  // Handle invalid readings
-  if (distance <= 0 || distance > 40) {
-    Serial.println("No echo - possible open wall");
-    moveForward();
-    return;
-  }
+  // If both sensors detect black, stop for challenge
+  if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
+    stopMotor();
+    Serial.println(">> Black strip detected! Stop for waypoint challenge.");
 
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
-
-  // Maintain target distance from side wall
-  if (distance > targetDist + tolerance) {
-    // Too far from wall → turn right
-    nudgeRight();
-  } 
-  else if (distance < targetDist - tolerance) {
-    // Too close to wall → turn left
-    nudgeLeft();
+    // Placeholder for your colour-sensing + turning code
+    delay(2000);  // simulate stopping to solve challenge
   } 
   else {
-    // Within target distance → go straight
-    moveForward();
+    // --- Step 2: Wall-following using ultrasonic sensor ---
+    float distance = ultrasonic.distanceCm(timeout_ms);
+
+    if (distance <= 0 || distance > 40) {
+      // Invalid or no reading -> assume open space
+      moveForward();
+      return;
+    }
+
+    Serial.print("Distance: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+
+    // Maintain target distance from wall
+    if (distance > targetDist + tolerance) {
+      // Too far from wall → steer toward wall
+      nudgeRight();
+    } 
+    else if (distance < targetDist - tolerance) {
+      // Too close → steer away from wall
+      nudgeLeft();
+    } 
+    else {
+      // Within range → go straight
+      moveForward();
+    }
   }
 
   delay(50);
