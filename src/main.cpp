@@ -110,9 +110,28 @@ void nudgeRight() {              // Code for nudging slightly to the right for s
     rightMotor.stop(); // Stop right motor
     delay(1000);       // Stop for 1000 ms
 }
-void shineIR() { // Code for turning on the IR emitter only
+int shineIR() { // Code for turning on the IR emitter only
+    digitalWrite(selA, LOW);
+    digitalWrite(selB, LOW);
+
+    delay(5); // small delay to stabilize
+
+    // Read reflected light
+    int readingOn = port4.aRead1();
+
+    // Turn IR emitter OFF and read ambient light (for baseline)
+    digitalWrite(selA, LOW);
+    digitalWrite(selB, HIGH);
+    delay(5);
+    int readingOff = port4.aRead1();
+
+    // Compute reflected IR difference
+    int irValue = readingOff - readingOn;  
+
+    return irValue;
 }
 void shineRed() { // Code for turning on the red LED only
+
 }
 void shineGreen() { // Code for turning on the green LED only
 }
@@ -256,34 +275,7 @@ void loop() {
     delay(5000);
     Serial.println(coloursNames[getColour()]);
 
-    // IR SENSOR CODE
 
-    // Turn IR emitter ON
-    digitalWrite(selA, LOW);
-    digitalWrite(selB, LOW);
-
-    delay(5); // small delay to stabilize
-
-    // Read reflected light
-    int readingOn = port4.aRead1();
-
-    // Turn IR emitter OFF and read ambient light (for baseline)
-    digitalWrite(selA, LOW);
-    digitalWrite(selB, HIGH);
-    delay(5);
-    int readingOff = port4.aRead1();
-
-    // Compute reflected IR difference
-    int irValue = readingOff - readingOn;
-
-    Serial.print("Ambient: ");
-    Serial.print(readingOff);
-    Serial.print("  Reflected: ");
-    Serial.print(readingOn);
-    Serial.print("  Δ = ");
-    Serial.println(irValue);
-
-    delay(200);
 }
 
 void setup() {
@@ -331,6 +323,16 @@ void loop() {
       moveForward();
     }
   }
+
+  // IR Sensor
+  int irValue = shineIR();
+  while (irValue > 300) {
+    irValue = shineIR();
+    if (irValue < 300) {
+        nudgeRight();
+    }
+  }
+  // exited loop, too close
 
   delay(50);
 }
