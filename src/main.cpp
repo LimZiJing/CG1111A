@@ -3,7 +3,9 @@
 
 MePort port4(PORT_4);
 MePort port3(PORT_3);
-
+MeUltrasonicSensor ultrasonic(PORT_1);  // Mount on side wall (left or right)
+MeDCMotor motorL(M1);
+MeDCMotor motorR(M2);
 #define TURNING_TIME_MS 390 // The time duration (ms) for turning
 
 // Defines pin to recieve LDR reading
@@ -13,8 +15,8 @@ MePort port3(PORT_3);
 #define LDRWait 10
 
 // Selector pins to be used from 2-4 Decoder
-int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
-int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
+const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
+const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 // Motor port assignment
 MeDCMotor leftMotor(M1);
@@ -271,5 +273,47 @@ void loop() {
     Serial.println(irValue);
 
     delay(200);
+}
+float targetDist = 8.0;    // Target side distance from wall (cm)
+float tolerance  = 1.0;    // Allowable error range (cm)
+int baseSpeed    = 150;    // Normal forward speed
+int correction   = 40;     // Turning adjustment
+int timeout_ms   = 30;     // Timeout for faster responsiveness
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("=== Ultrasonic Sensor Wall-Following Test ===");
+}
+
+void loop() {
+  // Measure distance with timeout (recommended from the brief)
+  float distance = ultrasonic.distanceCm(timeout_ms);
+
+  // Handle invalid readings
+  if (distance <= 0 || distance > 40) {
+    Serial.println("No echo - possible open wall");
+    moveForward();
+    return;
+  }
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Maintain target distance from side wall
+  if (distance > targetDist + tolerance) {
+    // Too far from wall → turn right
+    nudgeRight();
+  } 
+  else if (distance < targetDist - tolerance) {
+    // Too close to wall → turn left
+    nudgeLeft();
+  } 
+  else {
+    // Within target distance → go straight
+    moveForward();
+  }
+
+  delay(50);
 }
 
