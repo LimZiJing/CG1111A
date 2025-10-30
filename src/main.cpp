@@ -291,10 +291,53 @@ void loop() {
   if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
     stopMotor();
     Serial.println(">> Black strip detected! Stop for waypoint challenge.");
+    //Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
+      int colour = getColour();
+    Serial.print("Detected colour code: ");
+    Serial.println(colour);
 
-    // Placeholder for your colour-sensing + turning code
-    delay(2000);  // simulate stopping to solve challenge
-  } 
+    // Step 3: Perform waypoint action based on colour
+    switch (colour) {
+      case 0: // RED → Turn Left
+        Serial.println("Action: TURN LEFT");
+        turnLeft();
+        break;
+
+      case 1: // GREEN → Turn Right
+        Serial.println("Action: TURN RIGHT");
+        turnRight();
+        break;
+
+      case 2: // ORANGE → 180° Turn
+        Serial.println("Action: TURN AROUND");
+        uTurn();
+        break;
+
+      case 3: // PINK → Two Left Turns
+        Serial.println("Action: TWO LEFT TURNS");
+        turnLeft();
+        delay(300);
+        turnLeft();
+        break;
+
+      case 4: // LIGHT BLUE → Two Right Turns
+        Serial.println("Action: TWO RIGHT TURNS");
+        turnRight();
+        delay(300);
+        turnRight();
+        break;
+
+      case 5: // WHITE → End of maze
+        Serial.println("Action: END OF MAZE — STOP");
+        stopMotor();
+        while (true); // stop forever
+        break;
+    }
+
+    // After completing action, resume maze navigation
+    Serial.println("Resuming wall following...");
+    delay(500);
+}
   else {
     // --- Step 2: Wall-following using ultrasonic sensor ---
     float distance = ultrasonic.distanceCm(timeout_ms);
