@@ -21,10 +21,13 @@ int baseSpeed = 150;    // Forward speed
 int correction = 40;    // Adjustment for small turns
 int timeout_ms = 30;    // Ultrasonic read timeout
 
+//Defines pin to be used for controlling LED pins
+#define S1 A2//1A on HD74LS139
+#define S2 A3//1B on HD74LS139
 // Defines pin to recieve LDR reading
 #define LDR A1
 // Defines time delay before taking another RGB/LDR reading
-#define RGBWait 150
+#define RGBWait 200
 #define LDRWait 10
 
 // Selector pins to be used from 2-4 Decoder
@@ -45,10 +48,10 @@ MeBuzzer buzzer; // create the buzzer object
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
 // Array to store RGB values in the order black, white and range
-int calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 String calibrateNames[3] = {"black", "white", "range"};
 // Array to store RGB values in the order red, green, orange, pink, light blue and white
-int colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
 
 void celebrate();

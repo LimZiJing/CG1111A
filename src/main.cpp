@@ -4,8 +4,8 @@ void setup() {
     Serial.begin(9600);
 
     // put your setup code here, to run once:
-    pinMode(selA, OUTPUT);
-    pinMode(selB, OUTPUT);
+    pinMode(S1, OUTPUT);
+    pinMode(S2, OUTPUT);
     calibrateSensor();
     calibrateColour();
 
