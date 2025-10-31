@@ -4,14 +4,10 @@ void setup() {
     Serial.begin(9600);
 
     // put your setup code here, to run once:
-    pinMode(S1, OUTPUT);
-    pinMode(S2, OUTPUT);
-    calibrateSensor();
-    calibrateColour();
-
-    // IR Sensor Code
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
+    calibrateSensor();
+    calibrateColour();
 
     digitalWrite(selA, LOW);
     digitalWrite(selB, LOW);

@@ -200,4 +200,3 @@ int getAvgReading() {
     }
     return total / 7;
 }
-

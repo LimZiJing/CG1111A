@@ -21,9 +21,6 @@ int baseSpeed = 150;    // Forward speed
 int correction = 40;    // Adjustment for small turns
 int timeout_ms = 30;    // Ultrasonic read timeout
 
-//Defines pin to be used for controlling LED pins
-#define S1 A2//1A on HD74LS139
-#define S2 A3//1B on HD74LS139
 // Defines pin to recieve LDR reading
 #define LDR A1
 // Defines time delay before taking another RGB/LDR reading
