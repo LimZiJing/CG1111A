@@ -91,18 +91,6 @@ int shineIR() { // Code for turning on the IR emitter only
 
     return irValue;
 }
-void shineRed() { // Code for turning on the red LED only
-}
-void shineGreen() { // Code for turning on the green LED only
-}
-void shineBlue() { // Code for turning on the blue LED only
-}
-int detectColour() {
-    // Shine Red, read LDR after some delay
-    // Shine Green, read LDR after some delay
-    // Shine Blue, read LDR after some delay
-    // Run algorithm for colour decoding
-}
 
 void calibrateSensor() {
     // Code to calibrate sensor and store RGB values of black, white and range
@@ -164,36 +152,36 @@ void calibrateColour() {
 
 int getColour() {
     // Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
-    int current[3] = {0, 0, 0};
+    float current[3] = {0, 0, 0};
     for (int i = 0; i < 3; i++) {
         digitalWrite(selA, RGBPins[i][0]);
         digitalWrite(selB, RGBPins[i][1]);
         delay(RGBWait);
         current[i] = getAvgReading();
-        current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255;
+        current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255.0;
         digitalWrite(selA, LOW);
         digitalWrite(selB, LOW);
         delay(RGBWait);
     }
     // Code to run colour matching algorithm
-    int min = 300;
+    float minimum = 300.0;
     int minidx = 0;
     for (int j = 0; j < 6; j++) {
-        int temp = 0;
+        float temp = 0;
         for (int k = 0; k < 3; k++) {
             temp += abs(current[k] - colours[j][k]);
         }
-        if (temp < min) {
+        if (temp < minimum) {
             minidx = j;
-            min = temp;
+            minimum = temp;
         }
     }
     return minidx;
 }
 
-int getAvgReading() {
+float getAvgReading() {
     // Code to return average reading of LDR
-    int total = 0;
+    float total = 0;
     for (int i = 0; i < 7; i++) {
         total += analogRead(LDR);
         delay(LDRWait);

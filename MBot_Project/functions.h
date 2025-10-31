@@ -69,6 +69,6 @@ int detectColour();
 void calibrateSensor();
 void calibrateColour();
 int getColour();
-int getAvgReading();
+float getAvgReading();
 
 #endif
