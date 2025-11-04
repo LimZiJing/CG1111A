@@ -106,7 +106,7 @@ void calibrateSensor() {
             digitalWrite(selB, LOW);
             delay(RGBWait);
         }
-        Serial.println("Completed for"+ calibrateNames[i]+"!");
+        Serial.println("Completed for" + calibrateNames[i] + "!");
     }
     for (int k = 0; k < 3; k++) {
         calibrate[2][k] = calibrate[1][k] - calibrate[0][k];
@@ -132,12 +132,11 @@ void calibrateColour() {
             digitalWrite(selB, RGBPins[j][1]);
             delay(RGBWait);
             colours[i][j] = getAvgReading();
-            colours[i][j] = ((colours[i][j] - calibrate[0][j]) / calibrate[2][j] )* 255.0;
+            colours[i][j] = ((colours[i][j] - calibrate[0][j]) / calibrate[2][j]) * 255.0;
             digitalWrite(selA, LOW);
             digitalWrite(selB, LOW);
             delay(RGBWait);
         }
-        
     }
     // Code to print out stored RGB values of the colours
     Serial.println("All colour values successfully stored!");
