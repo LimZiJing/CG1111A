@@ -1,64 +1,53 @@
 #include "functions.h"
 
+/* ---PORT AND PIN DECLARATIONS--- */
 MePort port4(PORT_4);
 MePort port3(PORT_3);
+MeUltrasonicSensor ultrasonic(PORT_1);
+MeLineFollower lineSensor(PORT_2);
+MeBuzzer buzzer;
+MeDCMotor leftMotor(M1);
+MeDCMotor rightMotor(M2);
+int IRPin = 0;
+// Selector pins to be used from 2-4 Decoder
+const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
+const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
-// Integrated Ultrasonic Sensor and Line Following code
-MeUltrasonicSensor ultrasonic(PORT_1); // Side-mounted ultrasonic sensor (right side)
-MeLineFollower lineSensor(PORT_2);     // Line follower underneath
-
-// --- Wall-following Parameters ---
+/* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 8.0; // Desired distance (cm) from side wall
 float tolerance = 1.0;  // Acceptable deviation
 int baseSpeed = 150;    // Forward speed
 int correction = 40;    // Adjustment for small turns
 int timeout_ms = 30;    // Ultrasonic read timeout
 
-// Selector pins to be used from 2-4 Decoder
-int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
-int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
+/* ---MOTOR PARAMETERS--- */
+uint8_t motorSpeed = 255; // LARGER = FASTER
 
-// Motor port assignment
-MeDCMotor leftMotor(M1);
-MeDCMotor rightMotor(M2);
-int IRPin = 0;
-uint8_t motorSpeed = 255;
-
-// Setting motor speed to an integer between 1 and 255
-// The larger the number, the faster the speed
-
-MeBuzzer buzzer; // create the buzzer object
-
+/* ---STORED COLOUR SENSOR VALUES--- */
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
-// Array to store RGB values in the order black, white and range
-float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 String calibrateNames[3] = {"black", "white", "range"};
-// Array to store RGB values in the order red, green, orange, pink, light blue and white
-float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+float calibrate[3][3] = {{748.71, 790.86, 804.29}, {907.14, 982.86, 971.00}, {158.43, 192.00, 166.71}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
+float colours[6][3] = {{253.39, 121.81, 91.56}, {123.25, 228.82, 178.96}, {255.46, 192.96, 93.96}, {259.14, 236.41, 230.09}, {105.08, 223.69, 241.89}, {259.37, 255.95, 255.66}};
+
+// FIXME (UNCALIBRATED): float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+// FIXME (UNCALIBRATED): float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 
 void setup() {
     Serial.begin(9600);
 
-    // put your setup code here, to run once:
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
-    calibrateSensor();
-    calibrateColour();
+    // FIXME (TO CALIBRATE): calibrateSensor();
+    // FIXME (TO CALIBRATE): calibrateColour();
 
-    digitalWrite(selA, LOW);
-    digitalWrite(selB, LOW);
-
-    // IR Sensor Testing
     Serial.println("=== Setup Complete! ===");
 }
 
 void loop() {
-    // LDR CODE
 
-    // delay(5000);
-    // Serial.println(coloursNames[getColour()]);
+    delay(5000);
 
     // --- Step 1: Check for black strip using line sensor ---
     int lineState = lineSensor.readSensors();

@@ -1,9 +1,7 @@
 #include "functions.h"
 
-void celebrate() { // Code for playing celebratory tune
-    // Each of the following "function calls" plays a single tone.
-    // The numbers in the bracket specify the frequency and the duration (ms)
-    buzzer.tone(392, 200);
+void celebrate() {
+    // (frequency, time(ms))
     buzzer.tone(523, 200);
     buzzer.tone(659, 200);
     buzzer.tone(784, 200);
@@ -12,66 +10,65 @@ void celebrate() { // Code for playing celebratory tune
     buzzer.noTone();
 }
 
-void stopMotor() {     // Code for stopping motor
-    leftMotor.stop();  // Stop left motor
-    rightMotor.stop(); // Stop right motor
+void stopMotor() {
+    leftMotor.stop();
+    rightMotor.stop();
 }
-void moveForward() {            // Code for moving forward for some short interval
-    leftMotor.run(-motorSpeed); // Negative: wheel turns anti-clockwise
-    rightMotor.run(motorSpeed); // Positive: wheel turns clockwise
+void moveForward() {
+    leftMotor.run(-motorSpeed);
+    rightMotor.run(motorSpeed);
 }
-void turnRight() {               // Code for turning right 90 deg
-    leftMotor.run(-motorSpeed);  // Positive: wheel turns clockwise
-    rightMotor.run(-motorSpeed); // Positive: wheel turns clockwise
+void turnRight() {
+    leftMotor.run(-motorSpeed);
+    rightMotor.run(-motorSpeed);
     delay(TURNING_TIME_MS);
-    leftMotor.stop();  // Stop left motor
-    rightMotor.stop(); // Stop right motor
-    delay(1000);       // Stop for 1000 ms
+    leftMotor.stop();
+    rightMotor.stop();
+    delay(1000);
 }
-void turnLeft() { // Code for turning left 90 deg
-    // Turning left (on the spot):
-    leftMotor.run(motorSpeed);  // Positive: wheel turns clockwise
-    rightMotor.run(motorSpeed); // Positive: wheel turns clockwise
-    delay(TURNING_TIME_MS);     // Keep turning left for this time duration
-    leftMotor.stop();           // Stop left motor
-    rightMotor.stop();          // Stop right motor
-    delay(1000);                // Stop for 1000 ms
+void turnLeft() {
+    leftMotor.run(motorSpeed);
+    rightMotor.run(motorSpeed);
+    delay(TURNING_TIME_MS);
+    leftMotor.stop();
+    rightMotor.stop();
+    delay(1000);
 }
-void uTurn() { // Code for u-turn
+void uTurn() {
     turnLeft();
     moveForward();
     delay(500);
     turnLeft();
 }
-void doubleLeftTurn() { // Code for double left turn
+void doubleLeftTurn() {
     turnLeft();
     moveForward();
     delay(800);
     turnLeft();
 }
-void doubleRightTurn() { // Code for double right turn
+void doubleRightTurn() {
     turnRight();
     moveForward();
     delay(800);
     turnRight();
 }
-void nudgeLeft() {              // Code for nudging slightly to the left for some short interval
-    leftMotor.run(motorSpeed);  // Positive: wheel turns clockwise
-    rightMotor.run(motorSpeed); // Positive: wheel turns clockwise
-    delay(100);                 // Keep turning left for this time duration
-    leftMotor.stop();           // Stop left motor
-    rightMotor.stop();          // Stop right motor
-    delay(1000);                // Stop for 1000 ms
+void nudgeLeft() {
+    leftMotor.run(motorSpeed);
+    rightMotor.run(motorSpeed);
+    delay(100);
+    leftMotor.stop();
+    rightMotor.stop();
+    delay(1000);
 }
-void nudgeRight() {              // Code for nudging slightly to the right for some short interval
-    leftMotor.run(-motorSpeed);  // Positive: wheel turns clockwise
-    rightMotor.run(-motorSpeed); // Positive: wheel turns clockwise
+void nudgeRight() {
+    leftMotor.run(-motorSpeed);
+    rightMotor.run(-motorSpeed);
     delay(TURNING_TIME_MS);
-    leftMotor.stop();  // Stop left motor
-    rightMotor.stop(); // Stop right motor
-    delay(1000);       // Stop for 1000 ms
+    leftMotor.stop();
+    rightMotor.stop();
+    delay(1000);
 }
-int shineIR() { // Code for turning on the IR emitter only
+int shineIR() {
     digitalWrite(selA, LOW);
     digitalWrite(selB, LOW);
 

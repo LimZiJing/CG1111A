@@ -4,48 +4,39 @@
 #include <MeMCore.h>
 #include <math.h>
 
+/* ---DEFINITIONS--- */
+#define LDR A1      // Defines pin to recieve LDR reading
+#define RGBWait 200 // Defines time delay before taking another RGB/LDR reading
+#define LDRWait 10
+#define TURNING_TIME_MS 390 // The time duration (ms) for turning
+
+/* ---PORT AND PIN DECLARATIONS--- */
 extern MePort port4;
 extern MePort port3;
-
-#define TURNING_TIME_MS 390 // The time duration (ms) for turning
-// Integrated Ultrasonic Sensor and Line Following code
 extern MeUltrasonicSensor ultrasonic;
 extern MeLineFollower lineSensor;
+extern MeBuzzer buzzer;
+extern MeDCMotor leftMotor;
+extern MeDCMotor rightMotor;
+extern int IRPin;
+// Selector pins to be used from 2-4 Decoder
+extern const int selA; // 1A on HD74LS139 = A2 pin
+extern const int selB; // 1B on HD74LS139 = A3 pin
 
-// --- Wall-following Parameters ---
+/* ---WALL-FOLLOWING PARAMTERS--- */
 extern float targetDist;
 extern float tolerance;
 extern int baseSpeed;
 extern int correction;
 extern int timeout_ms;
 
-// Defines pin to recieve LDR reading
-#define LDR A1
-// Defines time delay before taking another RGB/LDR reading
-#define RGBWait 200
-#define LDRWait 10
+/* ---MOTOR PARAMETERS--- */
+extern uint8_t motorSpeed; // LARGER = FASTER
 
-// Selector pins to be used from 2-4 Decoder
-extern int selA; // 1A on HD74LS139 = A2 pin
-extern int selB;
-
-// Motor port assignment
-extern MeDCMotor leftMotor;
-extern MeDCMotor rightMotor;
-extern int IRPin;
-extern uint8_t motorSpeed;
-
-// Setting motor speed to an integer between 1 and 255
-// The larger the number, the faster the speed
-
-extern MeBuzzer buzzer; // create the buzzer object
-
-// Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
+/* ---STORED COLOUR SENSOR VALUES--- */
 extern int RGBPins[3][2];
-// Array to store RGB values in the order black, white and range
 extern float calibrate[3][3];
 extern String calibrateNames[3];
-// Array to store RGB values in the order red, green, orange, pink, light blue and white
 extern float colours[6][3];
 extern String coloursNames[6];
 
