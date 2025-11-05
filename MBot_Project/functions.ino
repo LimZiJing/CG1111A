@@ -21,8 +21,8 @@ void moveForward() {
 }
 
 void turnRight() {
-    leftMotor.run(-leftSpeed);
-    rightMotor.run(-rightSpeed);
+    leftMotor.run(-baseSpeed);
+    rightMotor.run(-baseSpeed);
     delay(TURNING_TIME_MS);
     leftMotor.stop();
     rightMotor.stop();
@@ -30,8 +30,8 @@ void turnRight() {
 }
 
 void turnLeft() {
-    leftMotor.run(leftSpeed);
-    rightMotor.run(rightSpeed);
+    leftMotor.run(baseSpeed);
+    rightMotor.run(baseSpeed);
     delay(TURNING_TIME_MS);
     leftMotor.stop();
     rightMotor.stop();
@@ -60,8 +60,8 @@ void doubleRightTurn() {
 }
 
 void nudgeLeft() {
-    leftMotor.run(leftSpeed);
-    rightMotor.run(rightSpeed);
+    leftMotor.run(baseSpeed);
+    rightMotor.run(baseSpeed);
     delay(100);
     leftMotor.stop();
     rightMotor.stop();
@@ -69,8 +69,8 @@ void nudgeLeft() {
 }
 
 void nudgeRight() {
-    leftMotor.run(-leftSpeed);
-    rightMotor.run(-rightSpeed);
+    leftMotor.run(-baseSpeed);
+    rightMotor.run(-baseSpeed);
     delay(TURNING_TIME_MS);
     leftMotor.stop();
     rightMotor.stop();
