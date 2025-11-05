@@ -26,8 +26,8 @@ extern int timeout_ms;
 #define LDRWait 10
 
 // Selector pins to be used from 2-4 Decoder
-extern const int selA; // 1A on HD74LS139 = A2 pin
-extern const int selB;
+extern int selA; // 1A on HD74LS139 = A2 pin
+extern int selB;
 
 // Motor port assignment
 extern MeDCMotor leftMotor;

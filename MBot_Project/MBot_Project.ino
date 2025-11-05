@@ -1,4 +1,5 @@
 #include "functions.h"
+
 MePort port4(PORT_4);
 MePort port3(PORT_3);
 
@@ -14,8 +15,8 @@ int correction = 40;    // Adjustment for small turns
 int timeout_ms = 30;    // Ultrasonic read timeout
 
 // Selector pins to be used from 2-4 Decoder
-const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
-const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
+int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
+int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 // Motor port assignment
 MeDCMotor leftMotor(M1);
