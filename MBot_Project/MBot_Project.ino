@@ -16,12 +16,24 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 8.0; // Desired distance (cm) from side wall
 float tolerance = 1.0;  // Acceptable deviation
-int baseSpeed = 150;    // Forward speed
 int correction = 40;    // Adjustment for small turns
 int timeout_ms = 30;    // Ultrasonic read timeout
 
+/* ---PID CONSTANTS--- */
+float Kp = 25.0;
+float Ki = 0.0;
+float Kd = 8.0;
+
+float error = 0;
+float previous_error = 0;
+float derivative = 0;
+float lastError = 0;
+float integral = 0;
+
 /* ---MOTOR PARAMETERS--- */
-uint8_t motorSpeed = 255; // LARGER = FASTER
+int baseSpeed = 100; // LARGER = FASTER
+int leftSpeed = baseSpeed;
+int rightSpeed = baseSpeed;
 
 /* ---STORED COLOUR SENSOR VALUES--- */
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
@@ -42,49 +54,39 @@ void setup() {
     // FIXME (TO CALIBRATE): calibrateSensor();
     // FIXME (TO CALIBRATE): calibrateColour();
 
-    Serial.println("=== Setup Complete! ===");
+    Serial.println("=== Setup Complete! Start in 5s. ===");
+    delay(5000);
 }
 
 void loop() {
-
-    delay(5000);
 
     // --- Step 1: Check for black strip using line sensor ---
     int lineState = lineSensor.readSensors();
 
     // Move Robot until a challenge is detected (line sensor detects black)
-    while (!(lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN)) {
-        // Get distance from wall via ultrasonic and IR sensors
-        float distance = ultrasonic.distanceCm(timeout_ms);
-        int irValue = shineIR();
+    // Get distance from wall via ultrasonic and IR sensors
+    float distance = ultrasonic.distanceCm(timeout_ms);
+    int irValue = shineIR();
 
-        if (distance <= 0 || distance > 40) {
-            // Invalid or no reading -> assume open space
-            moveForward();
-            return;
-        }
+    /* ---PID ALGORITHM--- */
+    error = targetDist - distance;
+    integral += error;                   // accumulate error
+    derivative = error - previous_error; // how fast error is changing
+    float correction = Kp * error + Ki * integral + Kd * derivative;
+    // Adjust motor speeds
+    float leftSpeed = baseSpeed + correction;
+    float rightSpeed = baseSpeed - correction;
+    moveForward();
+    previous_error = error;
 
-        // Too close to the left (IR Sensor)
-        if (irValue < 300) {
-            nudgeRight();
-        }
-
-        Serial.print("Distance: ");
-        Serial.print(distance);
-        Serial.println(" cm");
-
-        // Maintain target distance from wall
-        if (distance > targetDist + tolerance) {
-            // Too far from wall → steer toward wall
-            nudgeRight();
-        } else if (distance < targetDist - tolerance) {
-            // Too close → steer away from wall
-            nudgeLeft();
-        } else {
-            // Within range → go straight
-            moveForward();
-        }
+    // Too close to the left (IR Sensor)
+    if (irValue < 300) {
+        nudgeRight();
     }
+
+    Serial.print("Distance: ");
+    Serial.print(distance);
+    Serial.println(" cm");
 
     if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
         stopMotor();
@@ -95,41 +97,8 @@ void loop() {
         Serial.println(colour);
 
         // Step 3: Perform waypoint action based on colour
-        switch (colour) {
-        case 0: // RED → Turn Left
-            Serial.println("Action: TURN LEFT");
-            turnLeft();
-            break;
 
-        case 1: // GREEN → Turn Right
-            Serial.println("Action: TURN RIGHT");
-            turnRight();
-            break;
-
-        case 2: // ORANGE → 180° Turn
-            Serial.println("Action: TURN AROUND");
-            uTurn();
-            break;
-
-        case 3: // PINK → Two Left Turns
-            Serial.println("Action: TWO LEFT TURNS");
-            doubleLeftTurn();
-            break;
-
-        case 4: // LIGHT BLUE → Two Right Turns
-            Serial.println("Action: TWO RIGHT TURNS");
-            doubleRightTurn();
-            break;
-
-        case 5: // WHITE → End of maze
-            Serial.println("Action: END OF MAZE — STOP");
-            stopMotor();
-            delay(500);
-            celebrate();
-            while (true)
-                ; // stop forever
-            break;
-        }
+        doChallenge(colour);
 
         // After completing action, resume maze navigation
         Serial.println("Resuming wall following...");

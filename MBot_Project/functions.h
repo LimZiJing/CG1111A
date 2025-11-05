@@ -31,7 +31,9 @@ extern int correction;
 extern int timeout_ms;
 
 /* ---MOTOR PARAMETERS--- */
-extern uint8_t motorSpeed; // LARGER = FASTER
+extern int baseSpeed; // LARGER = FASTER
+extern int leftSpeed;
+extern int rightSpeed;
 
 /* ---STORED COLOUR SENSOR VALUES--- */
 extern int RGBPins[3][2];
@@ -51,13 +53,10 @@ void doubleRightTurn();
 void nudgeLeft();
 void nudgeRight();
 int shineIR();
-void shineRed();
-void shineGreen();
-void shineBlue();
-int detectColour();
 void calibrateSensor();
 void calibrateColour();
 int getColour();
 float getAvgReading();
+void doChallenge(int);
 
 #endif

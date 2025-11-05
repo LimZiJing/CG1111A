@@ -14,59 +14,105 @@ void stopMotor() {
     leftMotor.stop();
     rightMotor.stop();
 }
+
 void moveForward() {
-    leftMotor.run(-motorSpeed);
-    rightMotor.run(motorSpeed);
+    leftMotor.run(-leftSpeed);
+    rightMotor.run(rightSpeed);
 }
+
 void turnRight() {
-    leftMotor.run(-motorSpeed);
-    rightMotor.run(-motorSpeed);
+    leftMotor.run(-leftSpeed);
+    rightMotor.run(-rightSpeed);
     delay(TURNING_TIME_MS);
     leftMotor.stop();
     rightMotor.stop();
     delay(1000);
 }
+
 void turnLeft() {
-    leftMotor.run(motorSpeed);
-    rightMotor.run(motorSpeed);
+    leftMotor.run(leftSpeed);
+    rightMotor.run(rightSpeed);
     delay(TURNING_TIME_MS);
     leftMotor.stop();
     rightMotor.stop();
     delay(1000);
 }
+
 void uTurn() {
     turnLeft();
     moveForward();
     delay(500);
     turnLeft();
 }
+
 void doubleLeftTurn() {
     turnLeft();
     moveForward();
     delay(800);
     turnLeft();
 }
+
 void doubleRightTurn() {
     turnRight();
     moveForward();
     delay(800);
     turnRight();
 }
+
 void nudgeLeft() {
-    leftMotor.run(motorSpeed);
-    rightMotor.run(motorSpeed);
+    leftMotor.run(leftSpeed);
+    rightMotor.run(rightSpeed);
     delay(100);
     leftMotor.stop();
     rightMotor.stop();
     delay(1000);
 }
+
 void nudgeRight() {
-    leftMotor.run(-motorSpeed);
-    rightMotor.run(-motorSpeed);
+    leftMotor.run(-leftSpeed);
+    rightMotor.run(-rightSpeed);
     delay(TURNING_TIME_MS);
     leftMotor.stop();
     rightMotor.stop();
     delay(1000);
+}
+
+void doChallenge(int colour) {
+    switch (colour) {
+    case 0: // RED → Turn Left
+        Serial.println("Action: TURN LEFT");
+        turnLeft();
+        break;
+
+    case 1: // GREEN → Turn Right
+        Serial.println("Action: TURN RIGHT");
+        turnRight();
+        break;
+
+    case 2: // ORANGE → 180° Turn
+        Serial.println("Action: TURN AROUND");
+        uTurn();
+        break;
+
+    case 3: // PINK → Two Left Turns
+        Serial.println("Action: TWO LEFT TURNS");
+        doubleLeftTurn();
+        break;
+
+    case 4: // LIGHT BLUE → Two Right Turns
+        Serial.println("Action: TWO RIGHT TURNS");
+        doubleRightTurn();
+        break;
+
+    case 5: // WHITE → End of maze
+        Serial.println("Action: END OF MAZE — STOP");
+        stopMotor();
+        delay(500);
+        celebrate();
+        while (true)
+            ; // stop forever
+        break;
+    }
 }
 int shineIR() {
     digitalWrite(selA, LOW);
