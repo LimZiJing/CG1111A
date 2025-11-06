@@ -40,22 +40,29 @@ void turnLeft() {
 
 void uTurn() {
     turnLeft();
-    moveForward();
+    leftMotor.run(-baseSpeed);
+    rightMotor.run(baseSpeed);
     delay(500);
     turnLeft();
+   
 }
 
 void doubleLeftTurn() {
     turnLeft();
-    moveForward();
-    delay(800);
+    leftMotor.run(-baseSpeed);
+    rightMotor.run(baseSpeed);
+    delay(1000);
     turnLeft();
+    leftMotor.run(-baseSpeed);
+    rightMotor.run(baseSpeed);
+    delay(200);
 }
 
 void doubleRightTurn() {
     turnRight();
-    moveForward();
-    delay(800);
+    leftMotor.run(-baseSpeed);
+    rightMotor.run(baseSpeed);
+    delay(1000);
     turnRight();
 }
 

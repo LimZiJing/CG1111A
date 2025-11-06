@@ -8,7 +8,7 @@
 #define LDR A1      // Defines pin to recieve LDR reading
 #define RGBWait 200 // Defines time delay before taking another RGB/LDR reading
 #define LDRWait 10
-#define TURNING_TIME_MS 390 // The time duration (ms) for turning
+#define TURNING_TIME_MS 450 // The time duration (ms) for turning
 
 /* ---PORT AND PIN DECLARATIONS--- */
 extern MePort port4;

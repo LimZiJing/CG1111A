@@ -15,14 +15,21 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 10.0; // Desired distance (cm) from side wall
-int correction = 40;     // Adjustment for small turns
-int timeout_ms = 30;     // Ultrasonic read timeout
+int targetDistIR = 250;
+int correction = 40;    // Adjustment for small turns
+int timeout_ms = 30;    // Ultrasonic read timeout
 
 /* ---PID CONSTANTS--- */
 float Kp = 30.0;
 float Ki = 0.0;
 float Kd = 0.0;
 
+float Kp_IR = 3;
+float Ki_IR = 0.0;
+float Kd_IR = 0.0;
+
+float integral_IR = 0;
+float derivative_IR = 0;
 float error = 0;
 float previous_error = 0;
 float derivative = 0;
@@ -67,38 +74,64 @@ void loop() {
     float distance = ultrasonic.distanceCm(timeout_ms);
     int irValue = shineIR();
 
+    Serial.print("Distance: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+
+    Serial.print("IRVALUE: ");
+    Serial.print(irValue);
+    Serial.println(" V");
+
+
     /* ---PID ALGORITHM--- */
     error = targetDist - distance;
-    integral += error;                   // accumulate error
-    derivative = error - previous_error; // how fast error is changing
-    float correction = Kp * error + Ki * integral + Kd * derivative;
-    // Adjust motor speeds
-    leftSpeed = baseSpeed - correction;
-    rightSpeed = baseSpeed + correction;
-    moveForward();
-    previous_error = error;
+    //Serial.println(error);
 
-    // Too close to the left (IR Sensor)
-    /*
-    if (irValue < 300) {
-        nudgeRight();
+    if (distance > 11.5) {
+        
+        error = targetDistIR - irValue;
+        integral_IR += error;
+        derivative_IR = error - previous_error;
+        float correction = Kp_IR * error + Ki_IR * integral_IR + Kd_IR * derivative_IR;
+        leftSpeed = baseSpeed - correction;
+        rightSpeed = baseSpeed + correction;
+        moveForward();
+        previous_error = error;
+
+    } else {
+
+        integral += error;                   // accumulate error
+        derivative = error - previous_error; // how fast error is changing
+        float correction = Kp * error + Ki * integral + Kd * derivative;
+        //Adjust motor speeds
+        leftSpeed = baseSpeed - correction;
+        rightSpeed = baseSpeed + correction;
+        moveForward();
+        previous_error = error;
     }
-    */
+  
+    // Too close to the left (IR Sensor)
+    //if (irValue < 300) {
+     //   nudgeRight();
+    //}
 
+  
     if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
         stopMotor();
-        Serial.println(">> Black strip detected! Stop for waypoint challenge.");
+        //Serial.println(">> Black strip detected! Stop for waypoint challenge.");
         // Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
         int colour = getColour();
-        Serial.print("Detected colour code: ");
-        Serial.println(colour);
+        //Serial.print("Detected colour code: ");
+        //Serial.println(colour);
 
         // Step 3: Perform waypoint action based on colour
 
         doChallenge(colour);
 
         // After completing action, resume maze navigation
-        Serial.println("Resuming wall following...");
+        //Serial.println("Resuming wall following...");
         delay(200);
     }
+
+    delay(250);
 }
