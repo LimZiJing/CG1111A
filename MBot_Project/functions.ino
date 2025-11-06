@@ -39,11 +39,12 @@ void turnLeft() {
 }
 
 void uTurn() {
-    turnLeft();
     leftMotor.run(-baseSpeed);
-    rightMotor.run(baseSpeed);
-    delay(500);
-    turnLeft();
+    rightMotor.run(-baseSpeed);
+    delay(TURNING_TIME_MS * 2);
+    leftMotor.stop();
+    rightMotor.stop();
+    delay(1000);
    
 }
 
@@ -64,25 +65,11 @@ void doubleRightTurn() {
     rightMotor.run(baseSpeed);
     delay(1000);
     turnRight();
-}
-
-void nudgeLeft() {
-    leftMotor.run(baseSpeed);
-    rightMotor.run(baseSpeed);
-    delay(100);
-    leftMotor.stop();
-    rightMotor.stop();
-    delay(1000);
-}
-
-void nudgeRight() {
     leftMotor.run(-baseSpeed);
-    rightMotor.run(-baseSpeed);
-    delay(TURNING_TIME_MS);
-    leftMotor.stop();
-    rightMotor.stop();
-    delay(1000);
+    rightMotor.run(baseSpeed);
+    delay(200);
 }
+
 
 void doChallenge(int colour) {
     switch (colour) {
@@ -146,7 +133,7 @@ void calibrateSensor() {
     // Code to calibrate sensor and store RGB values of black, white and range
     for (int i = 0; i < 2; i++) {
         Serial.println("Put " + calibrateNames[i] + " sample for calibration...");
-        delay(10000);
+        delay(3000);
         for (int j = 0; j < 3; j++) {
             digitalWrite(selA, RGBPins[j][0]);
             digitalWrite(selB, RGBPins[j][1]);
@@ -176,7 +163,7 @@ void calibrateColour() {
     // Code to store RGB values of red, green, orange, pink, light blue, white
     for (int i = 0; i < 6; i++) {
         Serial.println("Put " + coloursNames[i] + " sample for calibration...");
-        delay(10000);
+        delay(3000);
         for (int j = 0; j < 3; j++) {
             digitalWrite(selA, RGBPins[j][0]);
             digitalWrite(selB, RGBPins[j][1]);

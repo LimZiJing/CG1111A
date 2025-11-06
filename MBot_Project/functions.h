@@ -48,8 +48,6 @@ void turnLeft();
 void uTurn();
 void doubleLeftTurn();
 void doubleRightTurn();
-void nudgeLeft();
-void nudgeRight();
 int shineIR();
 void calibrateSensor();
 void calibrateColour();

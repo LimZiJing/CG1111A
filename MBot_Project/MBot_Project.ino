@@ -57,8 +57,8 @@ void setup() {
 
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
-    // FIXME (TO CALIBRATE): calibrateSensor();
-    // FIXME (TO CALIBRATE): calibrateColour();
+    calibrateSensor();
+    calibrateColour();
 
     Serial.println("=== Setup Complete! Start in 5s. ===");
     delay(5000);
@@ -111,11 +111,6 @@ void loop() {
         moveForward();
         previous_error = error;
     }
-  
-    // Too close to the left (IR Sensor)
-    //if (irValue < 300) {
-     //   nudgeRight();
-    //}
 
   
     if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
