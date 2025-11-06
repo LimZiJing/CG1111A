@@ -15,17 +15,17 @@ const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
 const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
-float targetDist = 10.0; // Desired distance (cm) from side wall
-int targetDistIR = 250;
+float targetDist = 11.0; // Desired distance (cm) from side wall
+int targetDistIR = 270;
 int correction = 40; // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 
 /* ---PID CONSTANTS--- */
-float Kp = 30.0;
+float Kp = 31.0;
 float Ki = 0.0;
 float Kd = 0.0;
 
-float Kp_IR = 0.3;
+float Kp_IR = 0.31;
 float Ki_IR = 0.0;
 float Kd_IR = 0.0;
 
@@ -38,7 +38,7 @@ float lastError = 0;
 float integral = 0;
 
 /* ---MOTOR PARAMETERS--- */
-int baseSpeed = 200; // LARGER = FASTER
+int baseSpeed = 250; // LARGER = FASTER
 float leftSpeed = (float)baseSpeed;
 float rightSpeed = (float)baseSpeed;
 
@@ -90,7 +90,7 @@ void loop() {
     error = targetDist - distance;
     // Serial.println(error);
 
-    if (distance > 12) {
+    if (distance > 13) {
 
         error = targetDistIR - irValue;
         integral_IR += error;

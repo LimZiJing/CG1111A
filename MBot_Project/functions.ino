@@ -26,7 +26,7 @@ void turnRight() {
   delay(TURNING_TIME_MS);
   leftMotor.stop();
   rightMotor.stop();
-  delay(1000);
+  delay(COOLDOWN);
 }
 
 void turnLeft() {
@@ -35,40 +35,46 @@ void turnLeft() {
   delay(TURNING_TIME_MS);
   leftMotor.stop();
   rightMotor.stop();
-  delay(1000);
+  delay(COOLDOWN);
 }
 
 void uTurn() {
-  leftMotor.run(-baseSpeed);
-  rightMotor.run(-baseSpeed);
+  leftMotor.run(baseSpeed);
+  rightMotor.run(baseSpeed);
   delay(TURNING_TIME_MS * 2);
   leftMotor.stop();
   rightMotor.stop();
-  delay(1000);
+  delay(COOLDOWN);
 }
 
 void doubleLeftTurn() {
   turnLeft();
+  delay(COOLDOWN);
   leftMotor.run(-baseSpeed);
   rightMotor.run(baseSpeed);
-  delay(1000);
+  delay(FORWARD_TIME_MS);
+  stopMotor();
+  delay(COOLDOWN);
   turnLeft();
-  delay(300);
+  delay(COOLDOWN);
   leftMotor.run(-baseSpeed);
   rightMotor.run(baseSpeed);
-  delay(200);
+  delay(FORWARD_TIME_MS / 5);
 }
 
 void doubleRightTurn() {
   turnRight();
+  delay(COOLDOWN);
   leftMotor.run(-baseSpeed);
   rightMotor.run(baseSpeed);
-  delay(1000);
+  delay(FORWARD_TIME_MS);
+  stopMotor();
+  delay(COOLDOWN);
   turnRight();
-  delay(300);
+  delay(COOLDOWN);
   leftMotor.run(-baseSpeed);
   rightMotor.run(baseSpeed);
-  delay(200);
+  delay(FORWARD_TIME_MS / 5);
 }
 
 void doChallenge(int colour) {
