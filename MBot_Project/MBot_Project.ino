@@ -24,7 +24,7 @@ float Kp = 30.0;
 float Ki = 0.0;
 float Kd = 0.0;
 
-float Kp_IR = 3;
+float Kp_IR = 0.3;
 float Ki_IR = 0.0;
 float Kd_IR = 0.0;
 
@@ -74,6 +74,7 @@ void loop() {
     float distance = ultrasonic.distanceCm(timeout_ms);
     int irValue = shineIR();
 
+    /*
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.println(" cm");
@@ -82,7 +83,8 @@ void loop() {
     Serial.print(irValue);
     Serial.println(" V");
 
-
+ */
+   
     /* ---PID ALGORITHM--- */
     error = targetDist - distance;
     //Serial.println(error);
@@ -133,5 +135,4 @@ void loop() {
         delay(200);
     }
 
-    delay(250);
 }
