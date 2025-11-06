@@ -26,14 +26,13 @@ extern const int selB; // 1B on HD74LS139 = A3 pin
 /* ---WALL-FOLLOWING PARAMTERS--- */
 extern float targetDist;
 extern float tolerance;
-extern int baseSpeed;
 extern int correction;
 extern int timeout_ms;
 
 /* ---MOTOR PARAMETERS--- */
 extern int baseSpeed; // LARGER = FASTER
-extern int leftSpeed;
-extern int rightSpeed;
+extern float leftSpeed;
+extern float rightSpeed;
 
 /* ---STORED COLOUR SENSOR VALUES--- */
 extern int RGBPins[3][2];

@@ -32,8 +32,8 @@ float integral = 0;
 
 /* ---MOTOR PARAMETERS--- */
 int baseSpeed = 100; // LARGER = FASTER
-int leftSpeed = baseSpeed;
-int rightSpeed = baseSpeed;
+float leftSpeed = (float)baseSpeed;
+float rightSpeed = (float)baseSpeed;
 
 /* ---STORED COLOUR SENSOR VALUES--- */
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
@@ -74,8 +74,8 @@ void loop() {
     derivative = error - previous_error; // how fast error is changing
     float correction = Kp * error + Ki * integral + Kd * derivative;
     // Adjust motor speeds
-    float leftSpeed = baseSpeed + correction;
-    float rightSpeed = baseSpeed - correction;
+    leftSpeed = baseSpeed + correction;
+    rightSpeed = baseSpeed - correction;
     moveForward();
     previous_error = error;
 
