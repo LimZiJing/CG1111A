@@ -8,6 +8,7 @@ MeLineFollower lineSensor(PORT_2);
 MeBuzzer buzzer;
 MeDCMotor leftMotor(M1);
 MeDCMotor rightMotor(M2);
+MeRGBLed led(0, 30); // Based on hardware connections on mCore; cannot change
 int IRPin = 0;
 // Selector pins to be used from 2-4 Decoder
 const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
@@ -16,8 +17,8 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 10.0; // Desired distance (cm) from side wall
 int targetDistIR = 250;
-int correction = 40;    // Adjustment for small turns
-int timeout_ms = 30;    // Ultrasonic read timeout
+int correction = 40; // Adjustment for small turns
+int timeout_ms = 30; // Ultrasonic read timeout
 
 /* ---PID CONSTANTS--- */
 float Kp = 30.0;
@@ -55,6 +56,8 @@ float colours[6][3] = {{253.39, 121.81, 91.56}, {123.25, 228.82, 178.96}, {255.4
 void setup() {
     Serial.begin(9600);
 
+    led.setpin(13);
+
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
     calibrateSensor();
@@ -84,13 +87,13 @@ void loop() {
     Serial.println(" V");
 
  */
-   
+
     /* ---PID ALGORITHM--- */
     error = targetDist - distance;
-    //Serial.println(error);
+    // Serial.println(error);
 
     if (distance > 11.5) {
-        
+
         error = targetDistIR - irValue;
         integral_IR += error;
         derivative_IR = error - previous_error;
@@ -105,29 +108,27 @@ void loop() {
         integral += error;                   // accumulate error
         derivative = error - previous_error; // how fast error is changing
         float correction = Kp * error + Ki * integral + Kd * derivative;
-        //Adjust motor speeds
+        // Adjust motor speeds
         leftSpeed = baseSpeed - correction;
         rightSpeed = baseSpeed + correction;
         moveForward();
         previous_error = error;
     }
 
-  
     if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
         stopMotor();
-        //Serial.println(">> Black strip detected! Stop for waypoint challenge.");
-        // Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
+        // Serial.println(">> Black strip detected! Stop for waypoint challenge.");
+        //  Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
         int colour = getColour();
-        //Serial.print("Detected colour code: ");
-        //Serial.println(colour);
+        // Serial.print("Detected colour code: ");
+        // Serial.println(colour);
 
         // Step 3: Perform waypoint action based on colour
 
         doChallenge(colour);
 
         // After completing action, resume maze navigation
-        //Serial.println("Resuming wall following...");
+        // Serial.println("Resuming wall following...");
         delay(200);
     }
-
 }

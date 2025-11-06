@@ -45,7 +45,6 @@ void uTurn() {
     leftMotor.stop();
     rightMotor.stop();
     delay(1000);
-   
 }
 
 void doubleLeftTurn() {
@@ -70,36 +69,59 @@ void doubleRightTurn() {
     delay(200);
 }
 
-
 void doChallenge(int colour) {
     switch (colour) {
     case 0: // RED → Turn Left
-        Serial.println("Action: TURN LEFT");
+        led.setColor(255, 0, 0);
+        led.show();
+        delay(500);
+        led.setColor(0, 0, 0);
+        led.show();
         turnLeft();
         break;
 
     case 1: // GREEN → Turn Right
-        Serial.println("Action: TURN RIGHT");
+        led.setColor(0, 255, 0);
+        led.show();
+        delay(500);
+        led.setColor(0, 0, 0);
+        led.show();
         turnRight();
         break;
 
     case 2: // ORANGE → 180° Turn
-        Serial.println("Action: TURN AROUND");
+        led.setColor(255, 165, 0);
+        led.show();
+        delay(500);
+        led.setColor(0, 0, 0);
+        led.show();
         uTurn();
         break;
 
     case 3: // PINK → Two Left Turns
-        Serial.println("Action: TWO LEFT TURNS");
+        led.setColor(255, 192, 203);
+        led.show();
+        delay(500);
+        led.setColor(0, 0, 0);
+        led.show();
         doubleLeftTurn();
         break;
 
     case 4: // LIGHT BLUE → Two Right Turns
-        Serial.println("Action: TWO RIGHT TURNS");
+        led.setColor(0, 0, 255);
+        led.show();
+        delay(500);
+        led.setColor(0, 0, 0);
+        led.show();
         doubleRightTurn();
         break;
 
     case 5: // WHITE → End of maze
-        Serial.println("Action: END OF MAZE — STOP");
+        led.setColor(255, 255, 255);
+        led.show();
+        delay(500);
+        led.setColor(0, 0, 0);
+        led.show();
         stopMotor();
         delay(500);
         celebrate();

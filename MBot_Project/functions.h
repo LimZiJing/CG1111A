@@ -18,6 +18,7 @@ extern MeLineFollower lineSensor;
 extern MeBuzzer buzzer;
 extern MeDCMotor leftMotor;
 extern MeDCMotor rightMotor;
+extern MeRGBLed led;
 extern int IRPin;
 // Selector pins to be used from 2-4 Decoder
 extern const int selA; // 1A on HD74LS139 = A2 pin
