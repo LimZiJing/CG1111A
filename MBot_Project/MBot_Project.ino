@@ -8,7 +8,7 @@ MeLineFollower lineSensor(PORT_2);
 MeBuzzer buzzer;
 MeDCMotor leftMotor(M1);
 MeDCMotor rightMotor(M2);
-MeRGBLed led(0, 30); // Based on hardware connections on mCore; cannot change
+
 int IRPin = 0;
 // Selector pins to be used from 2-4 Decoder
 const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
@@ -46,9 +46,9 @@ float rightSpeed = (float)baseSpeed;
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
 String calibrateNames[3] = {"black", "white", "range"};
-float calibrate[3][3] = {{748.71, 790.86, 804.29}, {907.14, 982.86, 971.00}, {158.43, 192.00, 166.71}};
+float calibrate[3][3] = {{838.43, 892.14, 753.14}, {923.14, 994.57, 966.29}, {84.71, 102.43, 213.14}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
-float colours[6][3] = {{253.39, 121.81, 91.56}, {123.25, 228.82, 178.96}, {255.46, 192.96, 93.96}, {259.14, 236.41, 230.09}, {105.08, 223.69, 241.89}, {259.37, 255.95, 255.66}};
+float colours[6][3] = {{250.70, 104.92, 93.49}, {124.27, 225.13, 194.16}, {254.14, 181.03, 97.42}, {255.86, 230.82, 232.95}, {110.94, 216.59, 244.92}, {257.58, 254.29, 255.17}};
 
 // FIXME (UNCALIBRATED): float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 // FIXME (UNCALIBRATED): float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
@@ -56,12 +56,10 @@ float colours[6][3] = {{253.39, 121.81, 91.56}, {123.25, 228.82, 178.96}, {255.4
 void setup() {
     Serial.begin(9600);
 
-    led.setpin(13);
-
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
-    calibrateSensor();
-    calibrateColour();
+    //calibrateSensor();
+    //calibrateColour();
 
     Serial.println("=== Setup Complete! Start in 5s. ===");
     delay(5000);
@@ -92,7 +90,7 @@ void loop() {
     error = targetDist - distance;
     // Serial.println(error);
 
-    if (distance > 11.5) {
+    if (distance > 12) {
 
         error = targetDistIR - irValue;
         integral_IR += error;
