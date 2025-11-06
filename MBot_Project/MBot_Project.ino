@@ -14,15 +14,14 @@ const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
 const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
-float targetDist = 8.0; // Desired distance (cm) from side wall
-float tolerance = 1.0;  // Acceptable deviation
-int correction = 40;    // Adjustment for small turns
-int timeout_ms = 30;    // Ultrasonic read timeout
+float targetDist = 10.0; // Desired distance (cm) from side wall
+int correction = 40;     // Adjustment for small turns
+int timeout_ms = 30;     // Ultrasonic read timeout
 
 /* ---PID CONSTANTS--- */
-float Kp = 25.0;
+float Kp = 30.0;
 float Ki = 0.0;
-float Kd = 8.0;
+float Kd = 0.0;
 
 float error = 0;
 float previous_error = 0;
@@ -31,7 +30,7 @@ float lastError = 0;
 float integral = 0;
 
 /* ---MOTOR PARAMETERS--- */
-int baseSpeed = 100; // LARGER = FASTER
+int baseSpeed = 200; // LARGER = FASTER
 float leftSpeed = (float)baseSpeed;
 float rightSpeed = (float)baseSpeed;
 
@@ -74,19 +73,17 @@ void loop() {
     derivative = error - previous_error; // how fast error is changing
     float correction = Kp * error + Ki * integral + Kd * derivative;
     // Adjust motor speeds
-    leftSpeed = baseSpeed + correction;
-    rightSpeed = baseSpeed - correction;
+    leftSpeed = baseSpeed - correction;
+    rightSpeed = baseSpeed + correction;
     moveForward();
     previous_error = error;
 
     // Too close to the left (IR Sensor)
+    /*
     if (irValue < 300) {
         nudgeRight();
     }
-
-    Serial.print("Distance: ");
-    Serial.print(distance);
-    Serial.println(" cm");
+    */
 
     if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
         stopMotor();
