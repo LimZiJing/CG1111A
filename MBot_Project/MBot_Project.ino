@@ -21,9 +21,9 @@ int correction = 40; // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 
 /* ---PID CONSTANTS--- */
-float Kp = 31.0;
+float Kp = 35.0;
 float Ki = 0.0;
-float Kd = 0.0;
+float Kd = 10.0;
 
 float Kp_IR = 0.31;
 float Ki_IR = 0.0;
@@ -58,8 +58,8 @@ void setup() {
 
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
-    //calibrateSensor();
-    //calibrateColour();
+    // calibrateSensor();
+    // calibrateColour();
 
     Serial.println("=== Setup Complete! Start in 5s. ===");
     delay(5000);
@@ -111,22 +111,5 @@ void loop() {
         rightSpeed = baseSpeed + correction;
         moveForward();
         previous_error = error;
-    }
-
-    if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
-        stopMotor();
-        // Serial.println(">> Black strip detected! Stop for waypoint challenge.");
-        //  Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
-        int colour = getColour();
-        // Serial.print("Detected colour code: ");
-        // Serial.println(colour);
-
-        // Step 3: Perform waypoint action based on colour
-
-        doChallenge(colour);
-
-        // After completing action, resume maze navigation
-        // Serial.println("Resuming wall following...");
-        delay(200);
     }
 }
