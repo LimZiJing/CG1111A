@@ -16,16 +16,17 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 11.0; // Desired distance (cm) from side wall
-int targetDistIR = 250;
+float DistErr = 1.5;
+int targetDistIR = 230;
 int correction = 40; // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 
 /* ---PID CONSTANTS--- */
-float Kp = 31.0;
+float Kp = 28.0;
 float Ki = 0.0;
 float Kd = 0.0;
 
-float Kp_IR = 0.31;
+float Kp_IR = 0.45;
 float Ki_IR = 0.0;
 float Kd_IR = 0.0;
 
@@ -46,9 +47,9 @@ float rightSpeed = (float)baseSpeed;
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
 String calibrateNames[3] = {"black", "white", "range"};
-float calibrate[3][3] = {{838.43, 892.14, 753.14}, {923.14, 994.57, 966.29}, {84.71, 102.43, 213.14}};
+float calibrate[3][3] = {{871.00, 797.14, 793.43}, {928.43, 980.86, 969.71}, {57.43, 183.71, 176.29}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
-float colours[6][3] = {{250.70, 104.92, 93.49}, {124.27, 225.13, 194.16}, {254.14, 181.03, 97.42}, {255.86, 230.82, 232.95}, {110.94, 216.59, 244.92}, {257.58, 254.29, 255.17}};
+float colours[6][3] = {{226.46, 109.65, 92.78}, {104.66, 232.59, 193.42}, {258.81, 190.56, 100.22}, {258.32, 237.35, 231.86}, {106.57, 225.85, 244.05}, {259.544, 256.19, 254.79}};
 
 // FIXME (UNCALIBRATED): float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 // FIXME (UNCALIBRATED): float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
@@ -79,19 +80,22 @@ void loop() {
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.println(" cm");
+    */
 
+/*
     Serial.print("IRVALUE: ");
     Serial.print(irValue);
     Serial.println(" V");
+    */
 
- */
+ 
 
     /* ---PID ALGORITHM--- */
     error = targetDist - distance;
     // Serial.println(error);
 
-    if (distance > 13) {
-
+    if (distance > targetDist + DistErr) {
+        //Serial.println("ir using");
         error = targetDistIR - irValue;
         integral_IR += error;
         derivative_IR = error - previous_error;
