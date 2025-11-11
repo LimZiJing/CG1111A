@@ -56,5 +56,5 @@ void calibrateColour();
 int getColour();
 float getAvgReading();
 void doChallenge(int);
-
+void calibrateDistance();
 #endif

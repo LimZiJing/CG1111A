@@ -16,16 +16,17 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 11.0; // Desired distance (cm) from side wall
-int targetDistIR = 270;
+int targetDistIR = 370;
 int correction = 40; // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
+float tolerance = 2.0;
 
 /* ---PID CONSTANTS--- */
 float Kp = 31.0;
 float Ki = 0.0;
 float Kd = 0.0;
 
-float Kp_IR = 0.31;
+float Kp_IR = 0.4;
 float Ki_IR = 0.0;
 float Kd_IR = 0.0;
 
@@ -46,9 +47,9 @@ float rightSpeed = (float)baseSpeed;
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
 String calibrateNames[3] = {"black", "white", "range"};
-float calibrate[3][3] = {{838.43, 892.14, 753.14}, {923.14, 994.57, 966.29}, {84.71, 102.43, 213.14}};
+float calibrate[3][3] = {{757.43, 761.14, 812.71}, {906.00, 979.14, 968.57}, {148.57, 218.00, 155.86}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
-float colours[6][3] = {{250.70, 104.92, 93.49}, {124.27, 225.13, 194.16}, {254.14, 181.03, 97.42}, {255.86, 230.82, 232.95}, {110.94, 216.59, 244.92}, {257.58, 254.29, 255.17}};
+float colours[6][3] = {{242.00, 121.15, 85.55}, {134.12, 230.10, 180.44}, {255.00, 188.33, 89.05}, {262.36, 237.96, 233.50}, {138.53, 226.43, 245.65}, {261.13, 254.00, 254.64}};
 
 // FIXME (UNCALIBRATED): float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 // FIXME (UNCALIBRATED): float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
@@ -58,8 +59,9 @@ void setup() {
 
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
-    //calibrateSensor();
-    //calibrateColour();
+    // calibrateSensor();
+    // calibrateColour();
+    calibrateDistance();
 
     Serial.println("=== Setup Complete! Start in 5s. ===");
     delay(5000);
@@ -67,42 +69,38 @@ void setup() {
 
 void loop() {
 
-    // --- Step 1: Check for black strip using line sensor ---
+    // --- Check for black strip using line sensor ---
     int lineState = lineSensor.readSensors();
 
-    // Move Robot until a challenge is detected (line sensor detects black)
-    // Get distance from wall via ultrasonic and IR sensors
     float distance = ultrasonic.distanceCm(timeout_ms);
     int irValue = shineIR();
 
-    /*
-    Serial.print("Distance: ");
-    Serial.print(distance);
-    Serial.println(" cm");
-
-    Serial.print("IRVALUE: ");
-    Serial.print(irValue);
-    Serial.println(" V");
-
- */
-
     /* ---PID ALGORITHM--- */
-    error = targetDist - distance;
-    // Serial.println(error);
 
-    if (distance > 13) {
+    // Serial.println(error);
+    if (distance > targetDist + tolerance) {
+
+        /*
+            Serial.print("IRVALUE: ");
+            Serial.print(irValue);
+            Serial.println(" V");
+        */
 
         error = targetDistIR - irValue;
-        integral_IR += error;
-        derivative_IR = error - previous_error;
-        float correction = Kp_IR * error + Ki_IR * integral_IR + Kd_IR * derivative_IR;
+        float correction = Kp_IR * error;
         leftSpeed = baseSpeed - correction;
         rightSpeed = baseSpeed + correction;
         moveForward();
-        previous_error = error;
 
     } else {
 
+        /*
+        Serial.print("Distance: ");
+        Serial.print(distance);
+        Serial.println(" cm");
+        */
+
+        error = targetDist - distance;
         integral += error;                   // accumulate error
         derivative = error - previous_error; // how fast error is changing
         float correction = Kp * error + Ki * integral + Kd * derivative;
