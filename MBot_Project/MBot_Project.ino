@@ -54,10 +54,18 @@ void setup() {
 
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
-    // calibrateSensor();
-    // calibrateColour();
-    calibrateDistance();
 
+    bool calibrateColoursOn = false;
+    bool calibrateDistanceOn = true;
+
+    if (calibrateColoursOn == true) {
+        calibrateSensor();
+        calibrateColour();
+    }
+
+    if (calibrateDistanceOn == true) {
+        calibrateDistance();
+    }
     Serial.println("=== Setup Complete! Start in 5s. ===");
     delay(5000);
 }
