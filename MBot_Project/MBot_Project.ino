@@ -22,12 +22,18 @@ int timeout_ms = 30; // Ultrasonic read timeout
 float tolerance = 2.0;
 
 /* ---PID CONSTANTS--- */
-float Kp = 70;
+float Kp = 31;
 float Ki = 0.0;
 float Kd = 0.0;
 
+float Kp_IR = 0.45;
+float Ki_IR = 0.0;
+float Kd_IR = 0.0;
+
 float integral = 0;
 float derivative = 0;
+float integral_IR = 0;
+float derivative_IR = 0;
 
 float error = 0;
 float previous_error = 0;
@@ -79,23 +85,39 @@ void loop() {
     int irValue = shineIR();
 
     /* ---PID ALGORITHM--- */
-    // use combined normalised error values from both sensors
-    float norm_IR = (irValue - targetDistIR) / targetDistIR;
-    float norm_US = (distance - targetDist) / targetDist;
-    float error = -norm_IR + norm_US; // same direction logic
+    // Serial.println(error);
+    if (distance > targetDist + tolerance) {
 
-    integral += error;                   // accumulate error
-    derivative = error - previous_error; // how fast error is changing
-    float correction = Kp * error + Ki * integral + Kd * derivative;
+        /*
+            Serial.print("IRVALUE: ");
+            Serial.print(irValue);
+            Serial.println(" V");
+        */
 
-    // Adjust motor speeds
-    leftSpeed = baseSpeed - correction;
-    rightSpeed = baseSpeed + correction;
-    leftSpeed = constrain(leftSpeed, 0, 255);
-    rightSpeed = constrain(rightSpeed, 0, 255);
+        error = targetDistIR - irValue;
+        float correction = Kp_IR * error + Ki_IR * integral_IR + Kd_IR * derivative_IR;
+        leftSpeed = baseSpeed - correction;
+        rightSpeed = baseSpeed + correction;
+        moveForward();
 
-    moveForward();
-    previous_error = error;
+    } else {
+
+        /*
+        Serial.print("Distance: ");
+        Serial.print(distance);
+        Serial.println(" cm");
+        */
+
+        error = targetDist - distance;
+        integral += error;                   // accumulate error
+        derivative = error - previous_error; // how fast error is changing
+        float correction = Kp * error + Ki * integral + Kd * derivative;
+        // Adjust motor speeds
+        leftSpeed = baseSpeed - correction;
+        rightSpeed = baseSpeed + correction;
+        moveForward();
+        previous_error = error;
+    }
 
     if (lineState == S1_IN_S2_IN || lineState == S1_IN_S2_OUT | lineState == S1_OUT_S2_IN) {
         stopMotor();
