@@ -70,15 +70,26 @@ void loop() {
     float distance = ultrasonic.distanceCm(timeout_ms);
     int irValue = shineIR();
 
-    /* ---PID ALGORITHM--- */
-    // use combined normalised error values from both sensors
-    float norm_IR = (irValue - targetDistIR) / targetDistIR;
-    float norm_US = (distance - targetDist) / targetDist;
-    float error = -norm_IR + norm_US; // same direction logic
+    // determine wall presence
+    bool leftWall = (irValue > 150 && irValue < 800); // valid IR range
+    bool rightWall = (distance > 4 && distance < 20); // valid ultrasonic range
 
-    integral += error;                   // accumulate error
-    derivative = error - previous_error; // how fast error is changing
-    float correction = Kp * error + Ki * integral + Kd * derivative;
+    /* ---PID ALGORITHM--- */
+    if (leftWall && rightWall) {
+        // both walls detected — use combined normalization
+        float norm_IR = (irValue - targetDistIR) / targetDistIR;
+        float norm_US = (distance - targetDist) / targetDist;
+        error = -norm_IR + norm_US; // balanced between both
+    } else if (leftWall) {
+        // only left wall — follow IR
+        error = -(irValue - targetDistIR) / targetDistIR;
+    } else if (rightWall) {
+        // only right wall — follow ultrasonic
+        error = (distance - targetDist) / targetDist;
+    } else {
+        // no wall (shouldn’t happen)
+        error = 0;
+    }
 
     // Adjust motor speeds
     leftSpeed = baseSpeed - correction;
