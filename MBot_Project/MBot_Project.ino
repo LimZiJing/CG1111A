@@ -16,7 +16,7 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 11.0; // Desired distance (cm) from side wall
-int targetDistIR = 270;
+int targetDistIR = 250;
 int correction = 40; // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 
