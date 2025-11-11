@@ -42,9 +42,9 @@ float rightSpeed = (float)baseSpeed;
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
 String calibrateNames[3] = {"black", "white", "range"};
-float calibrate[3][3] = {{871.00, 797.14, 793.43}, {928.43, 980.86, 969.71}, {57.43, 183.71, 176.29}};
+float calibrate[3][3] = {{757.43, 761.14, 812.71}, {906.00, 979.14, 968.57}, {148.57, 218.00, 155.86}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
-float colours[6][3] = {{226.46, 109.65, 92.78}, {104.66, 232.59, 193.42}, {258.81, 190.56, 100.22}, {258.32, 237.96, 233.50}, {138.53, 226.43, 245.65}, {261.13, 254.00, 254.64}};
+float colours[6][3] = {{242.00, 121.15, 85.55}, {134.12, 230.10, 180.44}, {255.00, 188.33, 89.05}, {262.36, 237.96, 233.50}, {138.53, 226.43, 245.65}, {261.13, 254.00, 254.64}};
 
 // FIXME (UNCALIBRATED): float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 // FIXME (UNCALIBRATED): float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
