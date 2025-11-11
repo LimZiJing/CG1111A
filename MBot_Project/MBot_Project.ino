@@ -17,7 +17,7 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 11.0; // Desired distance (cm) from side wall
 int targetDistIR = 370;
-int correction = 40; // Adjustment for small turns
+int correction = 0;  // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 float tolerance = 2.0;
 
@@ -28,8 +28,6 @@ float Kd = 0.0;
 
 float integral = 0;
 float derivative = 0;
-float integral_IR = 0;
-float derivative_IR = 0;
 
 float error = 0;
 float previous_error = 0;
@@ -85,6 +83,9 @@ void loop() {
     // Adjust motor speeds
     leftSpeed = baseSpeed - correction;
     rightSpeed = baseSpeed + correction;
+    leftSpeed = constrain(leftSpeed, 0, 255);
+    rightSpeed = constrain(rightSpeed, 0, 255);
+
     moveForward();
     previous_error = error;
 
