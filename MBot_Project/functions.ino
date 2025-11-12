@@ -227,7 +227,7 @@ float getAvgReading() {
 void calibrateDistance() {
     float targetDist = 0;
     float targetDistIR = 0;
-    int readings = 10; // increase for more readings
+    int readings = 70; // increase for more readings
 
     // find average targetDist
     float total_dist = 0;
