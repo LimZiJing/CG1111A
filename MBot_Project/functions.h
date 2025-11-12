@@ -27,6 +27,7 @@ extern const int selB; // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
 extern float targetDist;
+extern float targetDistIR;
 extern int correction;
 extern int timeout_ms;
 

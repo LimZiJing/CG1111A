@@ -221,10 +221,9 @@ float getAvgReading() {
 }
 
 void calibrateDistance() {
-    float targetDist = 0;
-    float targetDistIR = 0;
-    int readings = 70; // increase for more readings
 
+    int readings = 70; // increase for more readings
+    delay(2000);
     // find average targetDist
     float total_dist = 0;
     float total_ir = 0;
@@ -236,6 +235,14 @@ void calibrateDistance() {
 
     targetDist = total_dist / readings;
     targetDistIR = total_ir / readings;
+
+    if (targetDist > 30) {
+        targetDist = 11;
+    }
+
+    if (targetDistIR < 20) {
+        targetDistIR = 230;
+    }
 
     Serial.println("");
     Serial.print("Target Ultrasonic Distance: ");
