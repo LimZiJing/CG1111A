@@ -243,7 +243,7 @@ void calibrateDistance() {
 
     Serial.println("Target Ultrasonic Distance: ");
     Serial.print(targetDist);
-    Serial.print(" cm");
-    Serial.println("Target IR Distance: ");
-    Serial.print(targetDistIR);
+    Serial.println(" cm");
+    Serial.print("Target IR Distance: ");
+    Serial.println(targetDistIR);
 }

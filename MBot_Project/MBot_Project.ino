@@ -16,7 +16,7 @@ const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
 float targetDist = 11.0; // Desired distance (cm) from side wall
-int targetDistIR = 370;
+int targetDistIR = 250;
 int correction = 0;  // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 float tolerance = 2.0;
@@ -87,7 +87,7 @@ void loop() {
         // both walls detected — use combined normalization
         float norm_IR = (irValue - targetDistIR) / targetDistIR;
         float norm_US = (distance - targetDist) / targetDist;
-        error = -norm_IR + norm_US; // balanced between both
+        error = norm_IR + norm_US; // balanced between both
     } else if (leftWall) {
         // only left wall — follow IR
         error = -(irValue - targetDistIR) / targetDistIR;
