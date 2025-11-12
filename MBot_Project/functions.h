@@ -10,7 +10,7 @@
 #define LDRWait 10
 #define TURNING_TIME_MS 345 // The time duration (ms) for turning
 #define FORWARD_TIME_MS 795
-#define COOLDOWN 200
+#define COOLDOWN 80
 /* ---PORT AND PIN DECLARATIONS--- */
 extern MePort port4;
 extern MePort port3;

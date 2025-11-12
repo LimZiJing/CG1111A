@@ -40,7 +40,7 @@ float previous_error = 0;
 float lastError = 0;
 
 /* ---MOTOR PARAMETERS--- */
-int baseSpeed = 250; // LARGER = FASTER
+int baseSpeed = 245; // LARGER = FASTER
 float leftSpeed = (float)baseSpeed;
 float rightSpeed = (float)baseSpeed;
 
