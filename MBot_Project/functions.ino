@@ -49,14 +49,12 @@ void uTurn() {
 
 void doubleLeftTurn() {
     turnLeft();
-    delay(COOLDOWN);
     leftMotor.run(-baseSpeed);
     rightMotor.run(baseSpeed);
     delay(FORWARD_TIME_MS);
     stopMotor();
     delay(COOLDOWN);
     turnLeft();
-    delay(COOLDOWN);
     leftMotor.run(-baseSpeed);
     rightMotor.run(baseSpeed);
     delay(FORWARD_TIME_MS / 5);
@@ -64,14 +62,12 @@ void doubleLeftTurn() {
 
 void doubleRightTurn() {
     turnRight();
-    delay(COOLDOWN);
     leftMotor.run(-baseSpeed);
     rightMotor.run(baseSpeed);
     delay(FORWARD_TIME_MS);
     stopMotor();
     delay(COOLDOWN);
     turnRight();
-    delay(COOLDOWN);
     leftMotor.run(-baseSpeed);
     rightMotor.run(baseSpeed);
     delay(FORWARD_TIME_MS / 5);
@@ -241,9 +237,10 @@ void calibrateDistance() {
     targetDist = total_dist / readings;
     targetDistIR = total_ir / readings;
 
-    Serial.println("Target Ultrasonic Distance: ");
+    Serial.println("");
+    Serial.print("Target Ultrasonic Distance: ");
     Serial.print(targetDist);
-    Serial.print(" cm");
-    Serial.println("Target IR Distance: ");
+    Serial.println(" cm");
+    Serial.print("Target IR Distance: ");
     Serial.print(targetDistIR);
 }
