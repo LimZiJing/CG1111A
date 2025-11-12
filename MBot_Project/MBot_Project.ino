@@ -15,11 +15,11 @@ const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
 const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
-float targetDist = 11.0; // Desired distance (cm) from side wall
-int targetDistIR = 370;
+float targetDist = 10.72; // Desired distance (cm) from side wall
+int targetDistIR = 230;
 int correction = 0;  // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
-float tolerance = 2.0;
+float tolerance = 2.5;
 
 /* ---PID CONSTANTS--- */
 float Kp = 31;
@@ -48,9 +48,9 @@ float rightSpeed = (float)baseSpeed;
 // Array to store logic values(A2, A3) to turn on LED in the order red, blue, green
 int RGBPins[3][2] = {{HIGH, LOW}, {LOW, HIGH}, {HIGH, HIGH}};
 String calibrateNames[3] = {"black", "white", "range"};
-float calibrate[3][3] = {{757.43, 761.14, 812.71}, {906.00, 979.14, 968.57}, {148.57, 218.00, 155.86}};
+float calibrate[3][3] = {{801.43, 784.29, 827.71}, {914.57, 979.29, 971.00}, {113.14, 195.00, 143.29}};
 String coloursNames[6] = {"red", "green", "orange", "pink", "light blue", "white"};
-float colours[6][3] = {{242.00, 121.15, 85.55}, {134.12, 230.10, 180.44}, {255.00, 188.33, 89.05}, {262.36, 237.96, 233.50}, {138.53, 226.43, 245.65}, {261.13, 254.00, 254.64}};
+float colours[6][3] = {{252.10, 126.85, 89.49}, {126.86, 233.52, 181.02}, {259.19, 192.79, 86.69}, {261.12, 239.12, 231.1}, {111.72, 228.10, 244.07}, {252.42, 256.49, 254.24}};
 
 // FIXME (UNCALIBRATED): float calibrate[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 // FIXME (UNCALIBRATED): float colours[6][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
@@ -68,6 +68,7 @@ void setup() {
         calibrateSensor();
         calibrateColour();
     }
+    delay(1000);
 
     if (calibrateDistanceOn == true) {
         calibrateDistance();
