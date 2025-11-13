@@ -11,6 +11,7 @@
 #define TURNING_TIME_MS 345 // The time duration (ms) for turning
 #define FORWARD_TIME_MS 795
 #define COOLDOWN 80
+
 /* ---PORT AND PIN DECLARATIONS--- */
 extern MePort port4;
 extern MePort port3;
@@ -21,7 +22,6 @@ extern MeDCMotor leftMotor;
 extern MeDCMotor rightMotor;
 extern MeRGBLed mLed;
 
-extern int IRPin;
 // Selector pins to be used from 2-4 Decoder
 extern const int selA; // 1A on HD74LS139 = A2 pin
 extern const int selB; // 1B on HD74LS139 = A3 pin

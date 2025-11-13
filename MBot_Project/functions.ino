@@ -1,15 +1,6 @@
 #include "functions.h"
 
-void celebrate() {
-    // (frequency, time(ms))
-    buzzer.tone(523, 200);
-    buzzer.tone(659, 200);
-    buzzer.tone(784, 200);
-    buzzer.tone(659, 150);
-    buzzer.tone(784, 400);
-    buzzer.noTone();
-}
-
+// Movement functions
 void stopMotor() {
     leftMotor.stop();
     rightMotor.stop();
@@ -73,6 +64,7 @@ void doubleRightTurn() {
     delay(FORWARD_TIME_MS / 5);
 }
 
+// Robot maze requirement functions
 void doChallenge(int colour) {
     switch (colour) {
     case 0: // RED → Turn Left
@@ -102,6 +94,18 @@ void doChallenge(int colour) {
         break;
     }
 }
+
+void celebrate() {
+    // (frequency, time(ms))
+    buzzer.tone(523, 200);
+    buzzer.tone(659, 200);
+    buzzer.tone(784, 200);
+    buzzer.tone(659, 150);
+    buzzer.tone(784, 400);
+    buzzer.noTone();
+}
+
+// IR and Colour sensor circuit code
 int shineIR() {
     digitalWrite(selA, LOW);
     digitalWrite(selB, LOW);
@@ -123,6 +127,46 @@ int shineIR() {
     return irValue;
 }
 
+int getColour() {
+    // Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
+    float current[3] = {0, 0, 0};
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(selA, RGBPins[i][0]);
+        digitalWrite(selB, RGBPins[i][1]);
+        delay(RGBWait);
+        current[i] = getAvgReading();
+        current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255.0;
+        digitalWrite(selA, LOW);
+        digitalWrite(selB, LOW);
+        delay(RGBWait);
+    }
+    // Code to run colour matching algorithm
+    float minimum = 300.0;
+    int minidx = 0;
+    for (int j = 0; j < 6; j++) {
+        float temp = 0;
+        for (int k = 0; k < 3; k++) {
+            temp += abs(current[k] - colours[j][k]);
+        }
+        if (temp < minimum) {
+            minidx = j;
+            minimum = temp;
+        }
+    }
+    return minidx;
+}
+
+float getAvgReading() {
+    // Code to return average reading of LDR
+    float total = 0;
+    for (int i = 0; i < 7; i++) {
+        total += analogRead(LDR);
+        delay(LDRWait);
+    }
+    return total / 7;
+}
+
+// Colour and distance calibration functions
 void calibrateSensor() {
     // Code to calibrate sensor and store RGB values of black, white and range
     for (int i = 0; i < 2; i++) {
@@ -181,50 +225,12 @@ void calibrateColour() {
     delay(5000);
 }
 
-int getColour() {
-    // Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
-    float current[3] = {0, 0, 0};
-    for (int i = 0; i < 3; i++) {
-        digitalWrite(selA, RGBPins[i][0]);
-        digitalWrite(selB, RGBPins[i][1]);
-        delay(RGBWait);
-        current[i] = getAvgReading();
-        current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255.0;
-        digitalWrite(selA, LOW);
-        digitalWrite(selB, LOW);
-        delay(RGBWait);
-    }
-    // Code to run colour matching algorithm
-    float minimum = 300.0;
-    int minidx = 0;
-    for (int j = 0; j < 6; j++) {
-        float temp = 0;
-        for (int k = 0; k < 3; k++) {
-            temp += abs(current[k] - colours[j][k]);
-        }
-        if (temp < minimum) {
-            minidx = j;
-            minimum = temp;
-        }
-    }
-    return minidx;
-}
-
-float getAvgReading() {
-    // Code to return average reading of LDR
-    float total = 0;
-    for (int i = 0; i < 7; i++) {
-        total += analogRead(LDR);
-        delay(LDRWait);
-    }
-    return total / 7;
-}
-
 void calibrateDistance() {
 
     int readings = 100; // increase for more readings
     delay(2000);
-    // find average targetDist
+
+    // Calculate average initial distance and IR values from walls at starting position
     float total_dist = 0;
     float total_ir = 0;
     for (int i = 0; i < readings; i++) {
@@ -233,18 +239,20 @@ void calibrateDistance() {
         delay(10);
     }
 
+    // Set targetDist and targetDistIR to calibrated values
     targetDist = total_dist / readings;
     targetDistIR = total_ir / readings;
 
+    // Backup target values if any wall is not present initially
     if (targetDist > 20) {
-        mLed.setColor(0, 0, 255);
+        mLed.setColor(0, 0, 255); // Blue colour --> Using backup target distance
         mLed.show();
         delay(1000);
         targetDist = 10.5;
     }
 
     if (targetDistIR < 35) {
-        mLed.setColor(255, 255, 255);
+        mLed.setColor(255, 255, 255); // White colour --> Using backup target IR value
         mLed.show();
         delay(1000);
         targetDistIR = 55;
