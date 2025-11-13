@@ -8,6 +8,7 @@ MeLineFollower lineSensor(PORT_2);
 MeBuzzer buzzer;
 MeDCMotor leftMotor(M1);
 MeDCMotor rightMotor(M2);
+MeRGBLed mled(0, 30);
 
 int IRPin = 0;
 // Selector pins to be used from 2-4 Decoder
@@ -15,8 +16,8 @@ const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
 const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
-float targetDist = 10.39; // Desired distance (cm) from side wall
-float targetDistIR = 58;
+float targetDist = 0;
+float targetDistIR = 0;
 int correction = 0;  // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 float tolerance = 0;
@@ -61,6 +62,8 @@ void setup() {
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
 
+    mled.setpin(13);
+
     bool calibrateColoursOn = false;
     bool calibrateDistanceOn = true;
 
@@ -70,6 +73,7 @@ void setup() {
     }
     delay(1000);
 
+    // calibrate targetDist and targetDist IR base on starting position
     if (calibrateDistanceOn == true) {
         calibrateDistance();
     }
@@ -88,13 +92,26 @@ void loop() {
     /* ---PID ALGORITHM--- */
     // Serial.println(error);
 
-    if (distance > targetDist) {
+    if (irValue < 20 && targetDist > 40) {
+        // set led to blue if no wall
+        // run straight forward
+        mled.setColor(0, 0, 255);
+        mled.show();
+
+        leftMotor.run(-baseSpeed);
+        rightMotor.run(baseSpeed);
+
+    } else if (distance > targetDist) {
 
         /*
             Serial.print("IRVALUE: ");
             Serial.print(irValue);
             Serial.println(" V");
         */
+
+        // set led to red if use ir
+        mled.setColor(255, 0, 0);
+        mled.show();
 
         error = targetDistIR - irValue;
         float correction = Kp_IR * error + Ki_IR * integral_IR + Kd_IR * derivative_IR;
@@ -109,6 +126,10 @@ void loop() {
         Serial.print(distance);
         Serial.println(" cm");
         */
+
+        // set led to green if use ultra
+        mled.setColor(0, 255, 0);
+        mled.show();
 
         error = targetDist - distance;
         integral += error;                   // accumulate error
