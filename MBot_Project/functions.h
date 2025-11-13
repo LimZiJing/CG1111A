@@ -19,6 +19,7 @@ extern MeLineFollower lineSensor;
 extern MeBuzzer buzzer;
 extern MeDCMotor leftMotor;
 extern MeDCMotor rightMotor;
+extern MeRGBLed mLed;
 
 extern int IRPin;
 // Selector pins to be used from 2-4 Decoder

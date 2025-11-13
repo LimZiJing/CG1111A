@@ -9,6 +9,7 @@ MeBuzzer buzzer;
 MeDCMotor leftMotor(M1);
 MeDCMotor rightMotor(M2);
 MeRGBLed mled(0, 30);
+MeRGBLed mLed(0, 30);
 
 int IRPin = 0;
 // Selector pins to be used from 2-4 Decoder
@@ -16,8 +17,8 @@ const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
 const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
-float targetDist = 11;
-float targetDistIR = 65;
+float targetDist = 10.39; // Desired distance (cm) from side wall
+float targetDistIR = 58;
 int correction = 0;  // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 float tolerance = 0;
@@ -62,7 +63,7 @@ void setup() {
     pinMode(selA, OUTPUT);
     pinMode(selB, OUTPUT);
 
-    mled.setpin(13);
+    mLed.setpin(13);
 
     bool calibrateColoursOn = false;
     bool calibrateDistanceOn = true;
@@ -91,17 +92,14 @@ void loop() {
 
     /* ---PID ALGORITHM--- */
     // Serial.println(error);
-
-    if (irValue < 20 && targetDist > 40) {
-        // set led to red if no wall
-        // run straight forward
-        mled.setColor(255, 0, 0);
-        mled.show();
-
+    if (distance < targetDist + 2 && targetDistIR < 35) {
+        mLed.setColor(0, 0, 255);
+        mLed.show();
         leftMotor.run(-baseSpeed);
         rightMotor.run(baseSpeed);
-
     } else if (distance > targetDist) {
+        mLed.setColor(255, 0, 0);
+        mLed.show();
 
         /*
             Serial.print("IRVALUE: ");
@@ -120,6 +118,8 @@ void loop() {
         moveForward();
 
     } else {
+        mLed.setColor(0, 255, 0);
+        mLed.show();
 
         /*
         Serial.print("Distance: ");
