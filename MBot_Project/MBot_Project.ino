@@ -16,8 +16,8 @@ const int selA = port3.pin1(); // 1A on HD74LS139 = A2 pin
 const int selB = port3.pin2(); // 1B on HD74LS139 = A3 pin
 
 /* ---WALL-FOLLOWING PARAMTERS--- */
-float targetDist = 0;
-float targetDistIR = 0;
+float targetDist = 11;
+float targetDistIR = 65;
 int correction = 0;  // Adjustment for small turns
 int timeout_ms = 30; // Ultrasonic read timeout
 float tolerance = 0;
