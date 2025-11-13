@@ -93,9 +93,9 @@ void loop() {
     // Serial.println(error);
 
     if (irValue < 20 && targetDist > 40) {
-        // set led to blue if no wall
+        // set led to red if no wall
         // run straight forward
-        mled.setColor(0, 0, 255);
+        mled.setColor(255, 0, 0);
         mled.show();
 
         leftMotor.run(-baseSpeed);
@@ -109,8 +109,8 @@ void loop() {
             Serial.println(" V");
         */
 
-        // set led to red if use ir
-        mled.setColor(255, 0, 0);
+        // set led to blue if use ir
+        mled.setColor(0, 0, 255);
         mled.show();
 
         error = targetDistIR - irValue;
