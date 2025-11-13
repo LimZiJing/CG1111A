@@ -222,7 +222,7 @@ float getAvgReading() {
 
 void calibrateDistance() {
 
-    int readings = 70; // increase for more readings
+    int readings = 100; // increase for more readings
     delay(2000);
     // find average targetDist
     float total_dist = 0;
@@ -236,12 +236,18 @@ void calibrateDistance() {
     targetDist = total_dist / readings;
     targetDistIR = total_ir / readings;
 
-    if (targetDist > 30) {
-        targetDist = 11;
+    if (targetDist > 20) {
+        mLed.setColor(0, 0, 255);
+        mLed.show();
+        delay(1000);
+        targetDist = 10.5;
     }
 
-    if (targetDistIR < 20) {
-        targetDistIR = 230;
+    if (targetDistIR < 35) {
+        mLed.setColor(255, 255, 255);
+        mLed.show();
+        delay(1000);
+        targetDistIR = 55;
     }
 
     Serial.println("");
