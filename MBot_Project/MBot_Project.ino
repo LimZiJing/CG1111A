@@ -9,7 +9,6 @@ MeBuzzer buzzer;
 MeDCMotor leftMotor(M1);
 MeDCMotor rightMotor(M2);
 MeRGBLed mled(0, 30);
-MeRGBLed mLed(0, 30);
 
 int IRPin = 0;
 // Selector pins to be used from 2-4 Decoder
