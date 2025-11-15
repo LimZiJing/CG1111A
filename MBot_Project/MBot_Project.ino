@@ -80,7 +80,7 @@ void loop() {
     /* ---PID ALGORITHM--- */
 
     // If no walls on both sides, move straight without PID
-    if (distance < targetDist + 2 && targetDistIR < 35) {
+    if (distance > targetDist + 2 && targetDistIR < 35) {
 
         mLed.setColor(0, 0, 255); // Blue colour --> No sensor mode
         mLed.show();
