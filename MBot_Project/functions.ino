@@ -131,19 +131,19 @@ int getColour() {
     // Code to return RGB values of current colour: 0->red, 1->green, 2->orange, 3->pink, 4->light blue and 5->white
     float current[3] = {0, 0, 0};
     for (int i = 0; i < 3; i++) {
-        digitalWrite(selA, RGBPins[i][0]);
+        digitalWrite(selA, RGBPins[i][0]); // Select RGB channel
         digitalWrite(selB, RGBPins[i][1]);
         delay(RGBWait);
-        current[i] = getAvgReading();
-        current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255.0;
-        digitalWrite(selA, LOW);
+        current[i] = getAvgReading(); // Get average reading from LDR
+        current[i] = (current[i] - calibrate[0][i]) / calibrate[2][i] * 255.0; // Normalize reading for comparision
+        digitalWrite(selA, LOW); // Turns off LEDs
         digitalWrite(selB, LOW);
         delay(RGBWait);
     }
     // Code to run colour matching algorithm
     float minimum = 300.0;
     int minidx = 0;
-    for (int j = 0; j < 6; j++) {
+    for (int j = 0; j < 6; j++) { // Utilises the Manhattan distance formula to match colours
         float temp = 0;
         for (int k = 0; k < 3; k++) {
             temp += abs(current[k] - colours[j][k]);
@@ -153,7 +153,7 @@ int getColour() {
             minimum = temp;
         }
     }
-    return minidx;
+    return minidx; // Return index of matched colour
 }
 
 float getAvgReading() {
@@ -173,18 +173,18 @@ void calibrateSensor() {
         Serial.println("Put " + calibrateNames[i] + " sample for calibration...");
         delay(3000);
         for (int j = 0; j < 3; j++) {
-            digitalWrite(selA, RGBPins[j][0]);
+            digitalWrite(selA, RGBPins[j][0]); // Select RGB channel
             digitalWrite(selB, RGBPins[j][1]);
             delay(RGBWait);
-            calibrate[i][j] = getAvgReading();
-            digitalWrite(selA, LOW);
+            calibrate[i][j] = getAvgReading(); // Get average reading from LDR
+            digitalWrite(selA, LOW); // Turns off LEDs
             digitalWrite(selB, LOW);
             delay(RGBWait);
         }
         Serial.println("Completed for" + calibrateNames[i] + "!");
     }
     for (int k = 0; k < 3; k++) {
-        calibrate[2][k] = calibrate[1][k] - calibrate[0][k];
+        calibrate[2][k] = calibrate[1][k] - calibrate[0][k]; // Calculate range of RGB values from white to black
     }
     // Code to print out stored RGB values of black, white and range
     Serial.println("Black, white and range values successfully stored!");
@@ -203,12 +203,12 @@ void calibrateColour() {
         Serial.println("Put " + coloursNames[i] + " sample for calibration...");
         delay(3000);
         for (int j = 0; j < 3; j++) {
-            digitalWrite(selA, RGBPins[j][0]);
+            digitalWrite(selA, RGBPins[j][0]); // Select RGB channel
             digitalWrite(selB, RGBPins[j][1]);
             delay(RGBWait);
-            colours[i][j] = getAvgReading();
-            colours[i][j] = ((colours[i][j] - calibrate[0][j]) / calibrate[2][j]) * 255.0;
-            digitalWrite(selA, LOW);
+            colours[i][j] = getAvgReading(); // Get average reading from LDR
+            colours[i][j] = ((colours[i][j] - calibrate[0][j]) / calibrate[2][j]) * 255.0; // Normalize reading for comparision
+            digitalWrite(selA, LOW); // Turns off LEDs
             digitalWrite(selB, LOW);
             delay(RGBWait);
         }
